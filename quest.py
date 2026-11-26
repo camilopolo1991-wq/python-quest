@@ -90,13 +90,26 @@ def write_save(save: dict) -> None:
     SAVE_FILE.write_text(json.dumps(save, indent=2), encoding="utf-8")
 
 
-DEFAULT_CONFIG = {"name": "Coder", "language": "en", "hero_color": "blue", "daily_goal": 3, "claude_model": ""}
+DEFAULT_MODEL = "claude-sonnet-5-5"
+MODELS = [  # (model id for Claude Code, label). "" = whatever your Claude Code uses by default.
+    ("claude-sonnet-5-5", "Sonnet 5.5 · balanced (default)"),
+    ("claude-opus-5-5", "Opus 5.5 · smartest, slower"),
+    ("claude-haiku-5-5", "Haiku 5.5 · fastest"),
+    ("claude-fable-5-2", "Fable 5.2"),
+    ("", "My Claude Code default"),
+]
+DEFAULT_CONFIG = {"name": "Coder", "language": "en", "hero_color": "blue", "daily_goal": 3,
+                  "claude_model": DEFAULT_MODEL, "config_version": 2}
 
 
 def load_config() -> dict:
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG_FILE.exists():
-        cfg.update(json.loads(CONFIG_FILE.read_text(encoding="utf-8")))
+        saved = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        if saved.get("config_version", 1) < 2:  # older saves had no model picker
+            saved["claude_model"] = DEFAULT_MODEL
+            saved["config_version"] = 2
+        cfg.update(saved)
     return cfg
 
 
@@ -119,7 +132,8 @@ def cmd_setup() -> None:
     ask("Tutor language", "language", ["en", "es"])
     ask("Hero color", "hero_color", ["blue", "red", "green", "purple", "gold"])
     ask("Exercises per day goal", "daily_goal")
-    ask("Claude model for the tutor (empty = your Claude Code default)", "claude_model")
+    print("  Models for Pip: " + ", ".join(m or "(empty = Claude Code default)" for m, _ in MODELS))
+    ask("Claude model for Pip", "claude_model", [m for m, _ in MODELS])
     write_config(cfg)
     print(c(f"\n  Saved. Welcome, {cfg['name']}! Run: python quest.py web\n", TEAL))
 

@@ -2,7 +2,7 @@
 
 **Learn Python from total beginner to Python Master, as a 16-bit RPG.** It runs on your own computer (Linux or WSL), you write real code in real files, automatic tests check it, and **your own Claude Code** is your tutor, Pip.
 
-Inspired by how [Boot.dev](https://boot.dev) teaches: a short lesson, then code, then tests. A Build project closes every module. XP, levels and streaks keep you coming back.
+Every lesson is short: read a little, write code, pass the tests. A Build project closes every module. XP, levels and streaks keep you coming back.
 
 ```
    ▄▄▄▄▄▄     PYTHON QUEST · CAMILO
@@ -41,6 +41,8 @@ Prefer the terminal? Everything works there too:
 | `python3 quest.py solution` | Show the solution (you lose that exercise's XP) |
 | `python3 quest.py list` | The whole map |
 | `python3 quest.py setup` | Change your name, language, color, daily goal |
+
+**Choose Pip's brain.** In ⚙ Settings (or `python3 quest.py setup`) pick the Claude model Pip uses: Sonnet 5.5 (default, balanced), Opus 5.5 (smartest, slower), Haiku 5.5 (fastest), or your Claude Code default.
 
 Or open the repo in Claude Code and use `/lesson`, `/hint` and `/review`. The `CLAUDE.md` file tells Claude to teach you, not do the work for you.
 

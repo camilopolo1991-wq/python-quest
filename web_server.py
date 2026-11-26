@@ -50,6 +50,7 @@ def state() -> dict:
         "current": current["id"] if current else None,
         "claude": bool(shutil.which("claude")),
         "configured": quest.CONFIG_FILE.exists(),
+        "models": [{"id": m, "label": label} for m, label in quest.MODELS],
         "modules": json.loads((quest.LESSONS / "modules.json").read_text(encoding="utf-8")),
     }
 
@@ -122,6 +123,8 @@ def do_config(body: dict) -> dict:
     for key in quest.DEFAULT_CONFIG:
         if key in body:
             value = body[key]
+            if key == "claude_model" and value not in [m for m, _ in quest.MODELS]:
+                continue
             cfg[key] = int(value) if isinstance(quest.DEFAULT_CONFIG[key], int) else str(value)[:60]
     quest.write_config(cfg)
     return cfg

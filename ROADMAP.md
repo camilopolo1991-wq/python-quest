@@ -1,6 +1,6 @@
 # Roadmap · beginner to Python Master
 
-Twelve lands. Each one is a module of short lessons with tested exercises, and ends with a Build project (the boss). The order follows the path Boot.dev uses for backend developers, kept in Python the whole way, with testing and AI agents added.
+Twelve lands. Each one is a module of short lessons with tested exercises, and ends with a Build project (the boss). The path goes from your first `print()` to backend services, testing and AI agents, in Python the whole way.
 
 | # | Land | Stage | What you learn | Boss (Build project) | Status |
 |---|---|---|---|---|---|

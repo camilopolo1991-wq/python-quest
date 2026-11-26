@@ -6,179 +6,178 @@
 <title>Python Quest</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Look: a 16-bit fantasy RPG. Each course module is a land on a world map; lessons happen on parchment
-   with wooden frames; Pip talks in a classic RPG dialog box. One deliberate light, warm world. */
+/* Look: a 16-bit fantasy RPG. The whole game fits one screen: HUD on top, the stage below.
+   World = an island map of 12 themed lands. Lesson = parchment notes | code | Pip's dialog box. */
 :root {
-  --sky: #9bd4ff;          /* page backdrop */
-  --parch: #f3e4bf;        /* parchment panels */
-  --parch-2: #e6d09c;      /* inset parchment */
-  --ink: #3a2717;          /* text on parchment */
-  --wood: #8a5a2b;         /* frames */
-  --wood-dark: #4f3015;    /* frame shadows, outlines */
-  --gold: #ffcc33;         /* XP, highlights */
-  --ruby: #d8473a;         /* errors, streak */
-  --leaf: #3f9a4b;         /* success */
-  --night: #1c1630;        /* dialog boxes, code */
-  --night-ink: #f6eedb;
+  --sky: #9bd4ff; --parch: #f3e4bf; --parch-2: #e6d09c; --ink: #3a2717; --wood: #8a5a2b; --wood-dark: #4f3015;
+  --gold: #ffcc33; --ruby: #d8473a; --leaf: #3f9a4b; --night: #1c1630; --night-ink: #f6eedb;
   --font-display: "Press Start 2P", "Courier New", monospace;
   --font-body: "Pixelify Sans", "Trebuchet MS", system-ui, sans-serif;
   --font-code: "JetBrains Mono", ui-monospace, "Courier New", monospace;
+  --gap: 12px;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; }
+html, body { margin: 0; height: 100%; }
 body {
-  background: var(--sky) linear-gradient(180deg, #7cc4ff 0, #b6e2ff 55%, #cdeccf 55%, #a9d99a 100%) fixed;
-  color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.45;
-  padding: 14px max(16px, env(safe-area-inset-left)) 30px max(16px, env(safe-area-inset-right));
+  height: 100dvh; overflow: hidden; display: flex; flex-direction: column; gap: var(--gap);
+  background: linear-gradient(180deg, #7cc4ff 0, #b6e2ff 55%, #cdeccf 55%, #a9d99a 100%);
+  color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.4;
+  padding: 10px max(12px, env(safe-area-inset-right)) 10px max(12px, env(safe-area-inset-left));
 }
+@media (max-width: 900px), (max-height: 560px) { body { height: auto; min-height: 100dvh; overflow: auto; } }
 button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px dashed var(--ruby); outline-offset: 3px; }
 [hidden] { display: none !important; }
+.screen { flex: 1; min-height: 0; }
 
-/* Wooden frame + parchment, the core RPG panel */
-.frame { background: var(--parch); border: 4px solid var(--wood-dark); box-shadow: inset 0 0 0 4px var(--wood), inset 0 0 0 7px var(--wood-dark), 6px 6px 0 #0004; padding: 20px; min-width: 0; }
-.frame > * + * { margin-top: 12px; }
-.dialog { background: var(--night); color: var(--night-ink); border: 4px solid #fff; box-shadow: 0 0 0 4px var(--night), 6px 6px 0 4px #0005; padding: 14px 16px; }
+.frame { background: var(--parch); border: 4px solid var(--wood-dark); box-shadow: inset 0 0 0 4px var(--wood), inset 0 0 0 7px var(--wood-dark), 5px 5px 0 #0004; padding: 16px; min-width: 0; min-height: 0; }
+.dialog { background: var(--night); color: var(--night-ink); border: 4px solid #fff; box-shadow: 0 0 0 4px var(--night), 5px 5px 0 4px #0005; padding: 10px 14px; min-width: 0; min-height: 0; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; line-height: 1.5; text-wrap: balance; }
-h2 { font-size: 13px; color: var(--wood-dark); }
-.label { font-family: var(--font-display); font-size: 9px; letter-spacing: 1px; color: var(--wood); }
-
-/* Buttons look like RPG menu buttons */
-.btn { cursor: pointer; font-family: var(--font-display); font-size: 10px; padding: 11px 14px; border: 4px solid var(--wood-dark); background: var(--gold); color: var(--wood-dark); box-shadow: inset -4px -4px 0 #d9a21a, inset 4px 4px 0 #fff3b0, 4px 4px 0 #0005; }
+h2 { font-size: 12px; color: var(--wood-dark); }
+.label { font-family: var(--font-display); font-size: 8px; letter-spacing: 1px; color: var(--wood); }
+.btn { cursor: pointer; font-family: var(--font-display); font-size: 9px; padding: 9px 12px; border: 4px solid var(--wood-dark); background: var(--gold); color: var(--wood-dark); box-shadow: inset -4px -4px 0 #d9a21a, inset 4px 4px 0 #fff3b0, 3px 3px 0 #0005; }
 .btn:hover { filter: brightness(1.06); }
-.btn:active { transform: translate(3px, 3px); box-shadow: inset -4px -4px 0 #d9a21a, 1px 1px 0 #0005; }
-.btn.green { background: #6cc35a; box-shadow: inset -4px -4px 0 #3f9a4b, inset 4px 4px 0 #b9f0a8, 4px 4px 0 #0005; }
-.btn.blue { background: #6fb7ff; box-shadow: inset -4px -4px 0 #3b82d0, inset 4px 4px 0 #cfe8ff, 4px 4px 0 #0005; }
-.btn.plain { background: var(--parch-2); box-shadow: inset -4px -4px 0 #c9b27c, inset 4px 4px 0 #fff6da, 4px 4px 0 #0005; }
+.btn:active { transform: translate(3px, 3px); box-shadow: inset -4px -4px 0 #d9a21a, 0 0 0 #0005; }
+.btn.green { background: #6cc35a; box-shadow: inset -4px -4px 0 #3f9a4b, inset 4px 4px 0 #b9f0a8, 3px 3px 0 #0005; }
+.btn.blue { background: #6fb7ff; box-shadow: inset -4px -4px 0 #3b82d0, inset 4px 4px 0 #cfe8ff, 3px 3px 0 #0005; }
+.btn.plain { background: var(--parch-2); box-shadow: inset -4px -4px 0 #c9b27c, inset 4px 4px 0 #fff6da, 3px 3px 0 #0005; }
 .btn:disabled { opacity: .55; cursor: wait; }
-.btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
 
-/* ===== Title / name screen ===== */
-#screenStart { min-height: 90vh; display: grid; place-items: center; }
-.title-card { max-width: 560px; width: 100%; text-align: center; }
-.title-card h1 { font-size: clamp(22px, 5vw, 34px); color: var(--gold); text-shadow: 4px 4px 0 var(--wood-dark), -2px -2px 0 var(--wood-dark), 2px -2px 0 var(--wood-dark), -2px 2px 0 var(--wood-dark); }
-.title-card h1 span { display: block; font-size: .5em; color: #fff; margin-top: 10px; }
-#startHero { width: 128px; image-rendering: pixelated; }
-.name-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-.name-row input { font-family: var(--font-display); font-size: 14px; padding: 12px; width: min(320px, 100%); text-align: center; background: #fff8e6; border: 4px solid var(--wood-dark); }
-.swatches { display: flex; gap: 10px; justify-content: center; }
-.sw { width: 34px; height: 34px; border: 4px solid var(--wood-dark); cursor: pointer; }
+/* ===== Title screen ===== */
+#screenStart { display: grid; place-items: center; overflow: auto; }
+.title-card { max-width: 540px; width: 100%; text-align: center; display: grid; gap: 14px; }
+.title-card h1 { font-size: clamp(20px, 4.5vw, 32px); color: var(--gold); text-shadow: 4px 4px 0 var(--wood-dark), -2px -2px 0 var(--wood-dark), 2px -2px 0 var(--wood-dark), -2px 2px 0 var(--wood-dark); }
+.title-card h1 span { display: block; font-size: .45em; color: #fff; margin-top: 10px; }
+#startHero { width: 96px; margin: 0 auto; image-rendering: pixelated; }
+.name-row input { font-family: var(--font-display); font-size: 13px; padding: 11px; width: min(320px, 100%); text-align: center; background: #fff8e6; border: 4px solid var(--wood-dark); }
+#nameForm { display: grid; gap: 10px; justify-items: center; }
+.swatches { display: flex; gap: 10px; }
+.sw { width: 32px; height: 32px; border: 4px solid var(--wood-dark); cursor: pointer; }
 .sw[aria-pressed="true"] { outline: 4px solid var(--ruby); outline-offset: 2px; }
 .typing::after { content: "▌"; animation: blink 1s steps(2) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
 /* ===== HUD ===== */
-.hud { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; justify-content: space-between; margin-bottom: 16px; padding: 10px 14px; }
-.hud-left { display: flex; align-items: center; gap: 12px; }
-#hudHero { width: 48px; height: 54px; image-rendering: pixelated; background: #2b2347; border: 3px solid #fff; }
-.hud-name { font-family: var(--font-display); font-size: 12px; }
+.hud { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; flex: none; padding: 6px 12px; }
+.hud-left { display: flex; align-items: center; gap: 10px; }
+#hudHero { width: 40px; height: 45px; image-rendering: pixelated; background: #2b2347; border: 3px solid #fff; }
+.hud-name { font-family: var(--font-display); font-size: 11px; }
 .hud-rank { font-size: 15px; color: var(--gold); }
-.meters { display: grid; gap: 6px; min-width: 220px; flex: 1; max-width: 420px; }
-.meter { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; font-size: 14px; }
-.meter b { font-family: var(--font-display); font-size: 9px; }
-.track { height: 14px; background: #2b2347; border: 3px solid #fff; }
+.meters { display: grid; gap: 4px; min-width: 200px; flex: 1; max-width: 420px; }
+.meter { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 8px; font-size: 13px; }
+.meter b { font-family: var(--font-display); font-size: 8px; }
+.track { height: 12px; background: #2b2347; border: 3px solid #fff; }
 .fill { height: 100%; width: 0; transition: width .6s steps(12); }
 .fill.xp { background: linear-gradient(#ffe27a, #f2b31a); }
 .fill.goal { background: linear-gradient(#9cf08a, #3f9a4b); }
-.hud-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.flame { font-family: var(--font-display); font-size: 11px; color: #ffb4a8; }
+.hud-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.flame { font-family: var(--font-display); font-size: 10px; color: #ffb4a8; }
+.model-tag { font-size: 13px; color: #c9bfe6; }
 
-/* ===== World map ===== */
-.world { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
-@media (max-width: 980px) { .world { grid-template-columns: minmax(0, 1fr); } }
-.mapbox { position: relative; padding: 10px; }
-#mapCanvas { width: 100%; height: auto; image-rendering: pixelated; display: block; border: 3px solid var(--wood-dark); }
-.node { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border: 4px solid var(--wood-dark); background: #fff3c4; cursor: pointer; font-family: var(--font-display); font-size: 9px; color: var(--wood-dark); display: grid; place-items: center; padding: 0; }
+/* ===== World ===== */
+#screenWorld { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 16px; }
+.mapframe { display: grid; place-items: center; padding: 10px; position: relative; overflow: hidden; }
+.mapwrap { position: relative; }
+#mapCanvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; border: 3px solid var(--wood-dark); }
+.cloud { position: absolute; width: 64px; height: 20px; background: #ffffffd0; box-shadow: 16px -8px 0 #ffffffd0, 32px 0 0 #ffffffd0; pointer-events: none; animation: drift 60s linear infinite; }
+@keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(110vw); } }
+.node { position: absolute; transform: translate(-50%, -50%); width: 28px; height: 28px; border: 4px solid var(--wood-dark); background: #fff3c4; cursor: pointer; font-family: var(--font-display); font-size: 8px; color: var(--wood-dark); display: grid; place-items: center; padding: 0; z-index: 2; }
 .node.done { background: #6cc35a; }
-.node.locked { background: #8b8b9b; color: #333; cursor: not-allowed; }
-.node.here { background: var(--gold); animation: bob 1s steps(2) infinite; }
+.node.locked { background: #b9b4c9; color: #4a4560; }
+.node.here { background: var(--gold); }
 .node.sel { outline: 4px solid var(--ruby); outline-offset: 2px; }
-@keyframes bob { 50% { transform: translate(-50%, -62%); } }
-.region h3 { font-size: 14px; color: var(--wood-dark); }
+.node .tag { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 7px; background: var(--parch); border: 2px solid var(--wood-dark); padding: 3px 5px; opacity: 0; pointer-events: none; }
+.node:hover .tag, .node.sel .tag, .node:focus-visible .tag { opacity: 1; }
+#heroToken { position: absolute; width: 32px; height: 36px; image-rendering: pixelated; transform: translate(-50%, -100%); pointer-events: none; z-index: 3; animation: bob 1s steps(2) infinite; }
+@keyframes bob { 50% { margin-top: -4px; } }
+.region { display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.region h3 { font-size: 13px; color: var(--wood-dark); }
 .region .sub { color: var(--wood); }
-.region ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.lesson-btn { width: 100%; display: flex; gap: 10px; align-items: center; text-align: left; cursor: pointer; background: var(--parch-2); border: 3px solid var(--wood-dark); padding: 6px 10px; font-size: 16px; }
+.region-list { list-style: none; margin: 0; padding: 0 4px 0 0; display: grid; gap: 5px; overflow: auto; flex: 1; min-height: 0; align-content: start; }
+.lesson-head { font-family: var(--font-display); font-size: 8px; color: var(--wood); margin-top: 6px; }
+.lesson-btn { width: 100%; display: flex; gap: 10px; align-items: center; text-align: left; cursor: pointer; background: var(--parch-2); border: 3px solid var(--wood-dark); padding: 4px 9px; font-size: 15px; }
 .lesson-btn:hover { background: #fff3c4; }
-.dot { width: 14px; height: 14px; border: 3px solid var(--wood-dark); background: #fff; flex: none; }
+.dot { width: 12px; height: 12px; border: 3px solid var(--wood-dark); background: #fff; flex: none; }
 .lesson-btn.done .dot { background: var(--leaf); }
 .lesson-btn.boss .dot { background: var(--ruby); }
 .lesson-btn.boss.done .dot { background: var(--leaf); }
-.topics { display: flex; flex-wrap: wrap; gap: 6px; }
-.topics span { background: var(--parch-2); border: 2px solid var(--wood); padding: 2px 8px; font-size: 14px; }
-.coming { background: var(--parch-2); border: 3px dashed var(--wood); padding: 10px; font-size: 16px; }
+.topics { display: flex; flex-wrap: wrap; gap: 5px; }
+.topics span { background: var(--parch-2); border: 2px solid var(--wood); padding: 1px 7px; font-size: 13px; }
+.coming { background: var(--parch-2); border: 3px dashed var(--wood); padding: 10px; font-size: 15px; }
 
-/* ===== Lesson screen ===== */
-.stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 18px; align-items: start; }
-@media (max-width: 1000px) { .stage { grid-template-columns: minmax(0, 1fr); } }
-.scroll { max-height: 62vh; overflow: auto; }
-.notes h1, .notes h2, .notes h3 { font-size: 13px; color: var(--wood-dark); margin: 10px 0 6px; }
-.notes p, .notes div { margin: 6px 0; }
-.notes pre, .code-out { background: var(--night); color: var(--night-ink); padding: 10px 12px; overflow-x: auto; font-family: var(--font-code); font-size: 14px; border: 3px solid var(--wood-dark); }
-.notes code { font-family: var(--font-code); font-size: .88em; background: var(--parch-2); padding: 0 4px; border: 1px solid var(--wood); }
-.notes table { border-collapse: collapse; font-size: 16px; }
-.notes td { border: 2px solid var(--wood); padding: 3px 8px; }
-.quest-scroll { background: #fff8e6; border: 3px solid var(--wood); padding: 10px 14px 10px 30px; margin: 0; list-style: '◆  '; }
-.region .lesson-head { font-family: var(--font-display); font-size: 9px; color: var(--wood); margin-top: 8px; }
-.editor { background: var(--night); border: 4px solid var(--wood-dark); }
-.editor .bar { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 6px 10px; background: #2b2347; color: #c9bfe6; font-size: 14px; }
-#code { width: 100%; min-height: 300px; resize: vertical; border: 0; background: transparent; color: #f6eedb; font-family: var(--font-code); font-size: 15px; line-height: 1.6; padding: 12px; tab-size: 4; white-space: pre; }
-.field { display: grid; gap: 4px; font-size: 15px; color: var(--wood); }
-.field input, .field select { background: #fff8e6; border: 3px solid var(--wood-dark); padding: 7px 10px; }
+/* ===== Lesson ===== */
+#screenLesson { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr) minmax(260px, 0.85fr); gap: 16px; }
+.col { display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: hidden; }
+.notes { flex: 1; min-height: 0; overflow: auto; padding-right: 6px; }
+.notes h3 { font-size: 11px; color: var(--wood-dark); margin: 8px 0 4px; }
+.notes p, .notes div { margin: 5px 0; }
+.notes pre { background: var(--night); color: var(--night-ink); padding: 8px 10px; overflow-x: auto; font-family: var(--font-code); font-size: 13px; border: 3px solid var(--wood-dark); }
+.notes code { font-family: var(--font-code); font-size: .86em; background: var(--parch-2); padding: 0 4px; border: 1px solid var(--wood); }
+.notes table { border-collapse: collapse; font-size: 15px; }
+.notes td { border: 2px solid var(--wood); padding: 2px 7px; }
+.back { cursor: pointer; background: none; border: 0; font-family: var(--font-display); font-size: 9px; color: var(--wood-dark); padding: 2px 0; text-align: left; }
+.quest-scroll { background: #fff8e6; border: 3px solid var(--wood); padding: 6px 10px 6px 26px; margin: 0; list-style: "◆  "; font-size: 15px; flex: none; max-height: 22%; overflow: auto; }
+.editor { background: var(--night); border: 4px solid var(--wood-dark); flex: 1; min-height: 120px; display: flex; flex-direction: column; }
+.editor .bar { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 4px 10px; background: #2b2347; color: #c9bfe6; font-size: 13px; }
+#code { flex: 1; width: 100%; resize: none; border: 0; background: transparent; color: #f6eedb; font-family: var(--font-code); font-size: 14px; line-height: 1.55; padding: 10px; tab-size: 4; white-space: pre; overflow: auto; }
+.field { display: grid; gap: 3px; font-size: 14px; color: var(--wood); }
+.field input, .field select { background: #fff8e6; border: 3px solid var(--wood-dark); padding: 6px 9px; }
 #inputs { font-family: var(--font-code); }
-.console { min-height: 90px; max-height: 280px; overflow: auto; white-space: pre-wrap; font-family: var(--font-code); font-size: 14px; }
+.console { flex: none; height: 24%; min-height: 70px; overflow: auto; white-space: pre-wrap; font-family: var(--font-code); font-size: 13px; }
 .console .err { color: #ff9b8e; } .console .ok { color: #9cf08a; } .console .dim { color: #a89fc6; } .console .xp { color: var(--gold); }
-.back { cursor: pointer; background: none; border: 0; font-family: var(--font-display); font-size: 10px; color: var(--wood-dark); padding: 4px 0; }
-
-/* Pip dialog box */
-.pipbox { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; }
-#pipFace { width: 56px; height: 56px; image-rendering: pixelated; background: #2b2347; border: 3px solid #fff; }
-.chat { max-height: 320px; min-height: 70px; overflow: auto; display: flex; flex-direction: column; gap: 10px; font-size: 17px; }
-.say { flex: none; }
-.say p { margin: 4px 0; }
-.say { white-space: pre-wrap; }
+.pip-col { display: flex; flex-direction: column; gap: 10px; }
+.pip-head { display: flex; gap: 10px; align-items: center; }
+#pipFace { width: 44px; height: 44px; image-rendering: pixelated; background: #2b2347; border: 3px solid #fff; flex: none; }
+.pip-head b { font-family: var(--font-display); font-size: 10px; color: var(--gold); }
+.pip-head small { display: block; color: #c9bfe6; font-size: 13px; }
+.chat { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 10px; font-size: 16px; }
+.say { white-space: pre-wrap; flex: none; }
+.say p { margin: 3px 0; }
 .say.me { color: #9fd0ff; }
-.say.me::before { content: "YOU ▸ "; font-family: var(--font-display); font-size: 9px; color: #9fd0ff; }
-.say.pip::before { content: "PIP ▸ "; font-family: var(--font-display); font-size: 9px; color: var(--gold); }
+.say.me::before { content: "YOU ▸ "; font-family: var(--font-display); font-size: 8px; }
+.say.pip::before { content: "PIP ▸ "; font-family: var(--font-display); font-size: 8px; color: var(--gold); }
 .say pre { background: #0f0b1f; padding: 6px 8px; overflow-x: auto; font-family: var(--font-code); font-size: 13px; white-space: pre; }
 .say code { font-family: var(--font-code); }
-.ask-row { display: flex; gap: 8px; margin-top: 10px; }
-.ask-row textarea { flex: 1; min-width: 0; height: 52px; resize: none; background: #0f0b1f; color: var(--night-ink); border: 3px solid #fff; padding: 8px; }
-.quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.q { cursor: pointer; background: none; border: 2px solid #c9bfe6; color: #c9bfe6; padding: 3px 8px; font-size: 14px; }
+.quick { display: flex; gap: 6px; flex-wrap: wrap; }
+.q { cursor: pointer; background: none; border: 2px solid #c9bfe6; color: #c9bfe6; padding: 2px 7px; font-size: 13px; }
 .q:hover { color: var(--gold); border-color: var(--gold); }
+.ask-row { display: flex; gap: 8px; }
+.ask-row textarea { flex: 1; min-width: 0; height: 48px; resize: none; background: #0f0b1f; color: var(--night-ink); border: 3px solid #fff; padding: 6px 8px; }
+
+@media (max-width: 1100px) { #screenLesson { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); } .pip-col { grid-column: 1 / -1; min-height: 260px; } }
+@media (max-width: 900px) { #screenWorld, #screenLesson { grid-template-columns: minmax(0, 1fr); } .col, .region { overflow: visible; } .notes, .region-list { max-height: 50vh; } .editor { min-height: 260px; } }
 
 .float { position: fixed; left: 50%; top: 28%; transform: translateX(-50%); font-family: var(--font-display); font-size: 20px; color: var(--gold); text-shadow: 3px 3px 0 var(--wood-dark); pointer-events: none; animation: rise 1.7s steps(16) forwards; z-index: 20; white-space: nowrap; }
 @keyframes rise { to { transform: translate(-50%, -90px); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .float, .node.here, .typing::after { animation: none; } .fill { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .float, #heroToken, .typing::after, .cloud { animation: none; } .fill { transition: none; } }
 dialog { border: 0; padding: 0; background: transparent; max-width: 460px; width: 94vw; }
 dialog::backdrop { background: #1c163099; }
-dialog form { display: grid; gap: 12px; }
+dialog form { display: grid; gap: 10px; }
 </style>
 </head>
 <body>
 
 <!-- ============ TITLE / NAME SCREEN ============ -->
-<section id="screenStart" hidden>
+<section id="screenStart" class="screen" hidden>
   <div class="title-card">
     <h1>PYTHON QUEST<span>from beginner to Python Master</span></h1>
     <canvas id="startHero" width="16" height="18" aria-hidden="true"></canvas>
-    <div class="dialog" style="text-align:left">
-      <p id="introText" class="typing" style="margin:0"></p>
-    </div>
-    <form id="nameForm" class="frame" style="margin-top:18px">
+    <div class="dialog" style="text-align:left"><p id="introText" class="typing" style="margin:0"></p></div>
+    <form id="nameForm" class="frame">
       <label class="label" for="heroName">YOUR NAME</label>
       <div class="name-row"><input id="heroName" maxlength="20" autocomplete="off" required placeholder="Camilo"></div>
       <div class="label">PICK YOUR COLOR</div>
       <div class="swatches" id="swatches"></div>
-      <div class="field" style="max-width:260px;margin-inline:auto"><label for="startLang">Pip speaks</label>
+      <div class="field" style="width:min(260px,100%)"><label for="startLang">Pip speaks</label>
         <select id="startLang"><option value="es">Español</option><option value="en">English</option></select></div>
-      <div class="btns" style="justify-content:center"><button class="btn" type="submit">▶ START ADVENTURE</button></div>
+      <button class="btn" type="submit">▶ START ADVENTURE</button>
     </form>
   </div>
 </section>
 
-<!-- ============ HUD (world + lesson) ============ -->
+<!-- ============ HUD ============ -->
 <header class="hud dialog" id="hud" hidden>
   <div class="hud-left">
     <canvas id="hudHero" width="16" height="18" aria-hidden="true"></canvas>
@@ -190,58 +189,57 @@ dialog form { display: grid; gap: 12px; }
   </div>
   <div class="hud-right">
     <span class="flame" id="streak">🔥 0 DAYS</span>
+    <span class="model-tag" id="modelTag"></span>
     <button class="btn plain" id="mapBtn">MAP</button>
-    <button class="btn plain" id="settingsBtn">⚙</button>
+    <button class="btn plain" id="settingsBtn" aria-label="Settings">⚙</button>
   </div>
 </header>
 
 <!-- ============ WORLD MAP ============ -->
-<section id="screenWorld" hidden>
-  <div class="world">
-    <div class="frame mapbox">
-      <canvas id="mapCanvas" width="192" height="120" aria-hidden="true"></canvas>
+<section id="screenWorld" class="screen" hidden>
+  <div class="frame mapframe" id="mapFrame">
+    <div class="mapwrap" id="mapWrap">
+      <canvas id="mapCanvas" width="320" height="200" aria-hidden="true"></canvas>
+      <div class="cloud" style="top:12%;animation-delay:-10s"></div>
+      <div class="cloud" style="top:48%;animation-delay:-38s;animation-duration:80s"></div>
+      <canvas id="heroToken" width="16" height="18" aria-hidden="true"></canvas>
       <div id="nodes"></div>
     </div>
-    <aside class="frame region" id="region" aria-live="polite"></aside>
   </div>
+  <aside class="frame region" id="region" aria-live="polite"></aside>
 </section>
 
 <!-- ============ LESSON ============ -->
-<section id="screenLesson" hidden>
-  <button class="back" id="backBtn">◂ BACK TO MAP</button>
-  <div class="stage">
-    <div class="frame">
-      <div class="label" id="crumb">MEADOW OF BEGINNINGS</div>
-      <h2 id="exTitle">…</h2>
-      <div class="notes scroll" id="notes"></div>
-    </div>
-    <div class="frame">
-      <div class="label">QUEST</div>
-      <ul class="quest-scroll" id="task"></ul>
-      <div class="editor">
-        <div class="bar"><span id="fileName">exercise.py</span><span>Tab = 4 spaces · Ctrl+Enter = Run</span></div>
-        <textarea id="code" spellcheck="false" aria-label="Your code"></textarea>
-      </div>
-      <div class="field" id="inputsWrap"><label for="inputs">Answers for input(), separated by commas</label><input id="inputs" autocomplete="off" placeholder="example: Camilo, 22"></div>
-      <div class="btns">
-        <button class="btn green" id="runBtn">▶ RUN</button>
-        <button class="btn" id="checkBtn">⚔ CHECK</button>
-        <button class="btn blue" id="hintBtn">? HINT</button>
-      </div>
-      <div class="dialog console" id="console"></div>
-    </div>
+<section id="screenLesson" class="screen" hidden>
+  <div class="frame col">
+    <button class="back" id="backBtn">◂ BACK TO MAP</button>
+    <div class="label" id="crumb">MEADOW OF BEGINNINGS</div>
+    <h2 id="exTitle">…</h2>
+    <div class="notes" id="notes"></div>
   </div>
-  <div class="dialog pipbox" style="margin-top:18px">
-    <canvas id="pipFace" width="12" height="12" aria-hidden="true"></canvas>
-    <div>
-      <div class="chat" id="chat" aria-live="polite"></div>
-      <div class="quick">
-        <button class="q" data-q="Explain this lesson simply, with one tiny example. Ask me to predict the output.">Explain the lesson</button>
-        <button class="q" data-q="Why does my code fail? Give me a small hint, not the answer.">Why does it fail?</button>
-        <button class="q" data-q="Quiz me with one quick question about this lesson.">Quiz me</button>
-      </div>
-      <div class="ask-row"><textarea id="ask" placeholder="Ask Pip…" aria-label="Message Pip"></textarea><button class="btn" id="sendBtn">SEND</button></div>
+  <div class="frame col">
+    <ul class="quest-scroll" id="task"></ul>
+    <div class="editor">
+      <div class="bar"><span id="fileName">exercise.py</span><span>Tab = 4 spaces · Ctrl+Enter = Run</span></div>
+      <textarea id="code" spellcheck="false" aria-label="Your code"></textarea>
     </div>
+    <div class="field" id="inputsWrap"><label for="inputs">Answers for input(), separated by commas</label><input id="inputs" autocomplete="off" placeholder="example: Camilo, 22"></div>
+    <div class="btns">
+      <button class="btn green" id="runBtn">▶ RUN</button>
+      <button class="btn" id="checkBtn">⚔ CHECK</button>
+      <button class="btn blue" id="hintBtn">? HINT</button>
+    </div>
+    <div class="dialog console" id="console"></div>
+  </div>
+  <div class="dialog pip-col">
+    <div class="pip-head"><canvas id="pipFace" width="12" height="12" aria-hidden="true"></canvas><div><b>PIP</b><small id="pipModel">your tutor</small></div></div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div class="quick">
+      <button class="q" data-q="Explain this lesson simply, with one tiny example. Ask me to predict the output.">Explain the lesson</button>
+      <button class="q" data-q="Why does my code fail? Give me a small hint, not the answer.">Why does it fail?</button>
+      <button class="q" data-q="Quiz me with one quick question about this lesson.">Quiz me</button>
+    </div>
+    <div class="ask-row"><textarea id="ask" placeholder="Ask Pip…" aria-label="Message Pip"></textarea><button class="btn" id="sendBtn">SEND</button></div>
   </div>
 </section>
 
@@ -252,8 +250,8 @@ dialog form { display: grid; gap: 12px; }
     <div class="field"><label for="sLang">Pip speaks</label><select id="sLang"><option value="es">Español</option><option value="en">English</option></select></div>
     <div class="field"><label for="sColor">Hero color</label><select id="sColor"><option>blue</option><option>red</option><option>green</option><option>purple</option><option>gold</option></select></div>
     <div class="field"><label for="sGoal">Exercises per day goal</label><input id="sGoal" inputmode="numeric"></div>
-    <div class="field"><label for="sModel">Claude model for Pip (empty = your Claude Code default)</label><input id="sModel" placeholder="e.g. sonnet"></div>
-    <p id="claudeHelp" style="font-size:15px;margin:0"></p>
+    <div class="field"><label for="sModel">Pip's brain (Claude model)</label><select id="sModel"></select></div>
+    <p id="claudeHelp" style="font-size:14px;margin:0"></p>
     <div class="btns"><button class="btn" value="save">SAVE</button><button class="btn plain" value="cancel">CANCEL</button></div>
   </form>
 </dialog>
@@ -267,28 +265,27 @@ async function api(path, body) {
   return r.json();
 }
 
-/* ================= Pixel art ================= */
+/* ================= Hero sprites ================= */
 const COLORS = { blue: "#3d7bd9", red: "#d8473a", green: "#3f9a4b", purple: "#7a4fd6", gold: "#d99a1a" };
 const PAL = { k: "#1c1630", s: "#f2c29b", h: "#5a3a22", e: "#1c1630", m: "#c0564a", y: "#ffcc33", p: "#3a3566", o: "#1c1630", c: "#d8473a", d: "#2b2d42", v: "#7a4fd6", r: "#d8473a", w: "#fff", t: "#5fe0c8", g: "#9aa3b5", l: "#3f9a4b", n: "#8a5a2b" };
 const BASE = ["................", "................", "................", "................", "................",
-  "....kkkkkkkk....", "...khhhhhhhhk...", "...khsssssshk...", "", "...kssssssssk...",
+  "....kkkkkkkk....", "...khhhhhhhhk...", "...khsssssshk...", "...ksesssssek...", "...kssssssssk...",
   "...ksssmmsssk...", "....kkkkkkkk....", "..kbbbbyybbbbk..", ".ksbbbbyybbbbsk.", "..kbbbbbbbbbbk..",
   "...kppppppppk...", "...kppk..kppk...", "...kook..kook..."];
 BASE[8] = "...k" + "sesssses" + "k...";
-/* One hat per rank (12 ranks, a new one every 5 levels) */
 const HATS = [
-  {},                                                                        // Curious: bare head
-  { 4: "....cccccccc....", 5: "....cccccccccc.." },                          // Apprentice: cap
-  { 4: "...dddddddddd...", 5: "..d..........d..", 6: "..d..........d..", 7: ".dd..........dd.", 8: ".dd..........dd." }, // Coder: headphones
-  { 3: ".....yyyyyy.....", 4: "....yyyyyyyy....", 5: "...yyyyyyyyyy..." },   // Builder: hard hat
-  { 3: "....gggggggg....", 4: "...gggggggggg...", 5: "...g.kkkkkk.g...", 8: "...kwwkkkwwk...." }, // Debugger: helmet + goggles
-  { 3: ".....llllll.....", 4: "....llllllll....", 5: "..llllllllllll.." },  // Scripter: green beret
-  { 2: ".....dddddd.....", 3: "....dddddddd....", 4: "...dddddddddd...", 5: "..dddddddddddd..", 6: "..dddddddddddd..", 7: "..dd........dd..", 8: "..dd.kkkkkkkdd.." }, // Hacker: hood + shades
-  { 3: "....gggggggg....", 4: "...gggggggggg...", 5: "..ggg......ggg..", 12: "..kggggyyggggk.." }, // Engineer: knight helm
-  { 2: "......nnnn......", 3: ".....nnnnnn.....", 4: "...nnnnnnnnnn...", 5: "..nnnnnnnnnnnn.." }, // Architect: ranger hat
-  { 0: ".......vv.......", 1: "......vvvv......", 2: ".....vvyvvv.....", 3: ".....vvvvvv.....", 4: "....vvvvvvvv....", 5: "..vvvvvvvvvvvv.." }, // Wizard
-  { 0: "......wwww......", 1: ".....wwwwww.....", 2: "....wwyyyyww....", 3: "....wwwwwwww....", 4: "...wwwwwwwwww...", 10: "...kswwwwwwsk...", 11: "....kwwwwwwk...." }, // Sage: white hood + beard
-  { 1: "...y..y..y..y...", 2: "...yyyyyyyyyy...", 3: "...yryytyyryy...", 4: "...yyyyyyyyyy...", 12: ".kyyyyyyyyyyyyk." }, // Python Master: crown + golden cape
+  {},
+  { 4: "....cccccccc....", 5: "....cccccccccc.." },
+  { 4: "...dddddddddd...", 5: "..d..........d..", 6: "..d..........d..", 7: ".dd..........dd.", 8: ".dd..........dd." },
+  { 3: ".....yyyyyy.....", 4: "....yyyyyyyy....", 5: "...yyyyyyyyyy..." },
+  { 3: "....gggggggg....", 4: "...gggggggggg...", 5: "...g.kkkkkk.g...", 8: "...kwwkkkwwk...." },
+  { 3: ".....llllll.....", 4: "....llllllll....", 5: "..llllllllllll.." },
+  { 2: ".....dddddd.....", 3: "....dddddddd....", 4: "...dddddddddd...", 5: "..dddddddddddd..", 6: "..dddddddddddd..", 7: "..dd........dd..", 8: "..dd.kkkkkkkdd.." },
+  { 3: "....gggggggg....", 4: "...gggggggggg...", 5: "..ggg......ggg..", 12: "..kggggyyggggk.." },
+  { 2: "......nnnn......", 3: ".....nnnnnn.....", 4: "...nnnnnnnnnn...", 5: "..nnnnnnnnnnnn.." },
+  { 0: ".......vv.......", 1: "......vvvv......", 2: ".....vvyvvv.....", 3: ".....vvvvvv.....", 4: "....vvvvvvvv....", 5: "..vvvvvvvvvvvv.." },
+  { 0: "......wwww......", 1: ".....wwwwww.....", 2: "....wwyyyyww....", 3: "....wwwwwwww....", 4: "...wwwwwwwwww...", 10: "...kswwwwwwsk...", 11: "....kwwwwwwk...." },
+  { 1: "...y..y..y..y...", 2: "...yyyyyyyyyy...", 3: "...yryytyyryy...", 4: "...yyyyyyyyyy...", 12: ".kyyyyyyyyyyyyk." },
 ];
 function draw(canvas, rows, pal) {
   const ctx = canvas.getContext("2d"); ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -296,49 +293,110 @@ function draw(canvas, rows, pal) {
 }
 function heroRows(rank) {
   const rows = BASE.slice();
-  for (const [r, line] of Object.entries(HATS[Math.min(rank, HATS.length - 1)] || {})) {
-    const b = rows[r].split(""); [...line].forEach((ch, i) => { if (ch !== ".") b[i] = ch; }); rows[r] = b.join("");
-  }
+  for (const [r, line] of Object.entries(HATS[Math.min(rank, HATS.length - 1)] || {})) { const b = rows[r].split(""); [...line].forEach((ch, i) => { if (ch !== ".") b[i] = ch; }); rows[r] = b.join(""); }
   return rows;
 }
 const rankOf = (level) => Math.floor((level - 1) / 5);
 function drawHero(canvas, level, color) { draw(canvas, heroRows(rankOf(level)), { ...PAL, b: COLORS[color] || COLORS.blue }); }
 draw($("pipFace"), ["....bbbb....", "...bbbbbb...", "...bwkbwkb..", "...bbbbbbbr.", "....bbbb....", ".....bb.....", "..yyyybb....", ".yyyyyyy....", ".yy....yy...", ".yyyyyyyyy..", "..yyyyyyyyb.", "............"], { ...PAL, b: "#3d7bd9" });
 
-/* ================= World map (drawn at 192x120, scaled up) ================= */
-const NODE_POS = [[14, 100], [36, 88], [24, 66], [52, 60], [76, 76], [98, 92], [118, 72], [104, 48], [132, 34], [154, 52], [170, 78], [176, 20]]; // module 1..12
+/* ================= World map: 320x200 island, 12 themed lands ================= */
+const MW = 320, MH = 200;
+const NODE_POS = [[30, 168], [64, 140], [40, 104], [92, 96], [128, 128], [168, 158], [200, 118], [174, 78], [222, 52], [258, 92], [286, 136], [292, 30]];
 const TERRAIN = {
-  meadow: ["#7ccf5e", "#a4e07a"], forest: ["#2f7a3a", "#3f9a4b"], cave: ["#5b5470", "#3a3450"], river: ["#3d8fe0", "#7cc4ff"],
-  castle: ["#9a9aae", "#c9c9d6"], swamp: ["#55704a", "#7a8f56"], peaks: ["#8d8fa3", "#ffffff"], ruins: ["#b59a6a", "#d8c08c"],
-  harbor: ["#2f6fb8", "#5fa4ea"], citadel: ["#7a4fd6", "#a98af0"], docks: ["#8a5a2b", "#b98450"], summit: ["#e8f4ff", "#ffffff"],
+  meadow: ["#86d460", "#a8e27e", "#6fbf4c"], forest: ["#2f7a3a", "#256a30", "#3f8f49"], cave: ["#5d5672", "#4a4460", "#6e6884"],
+  river: ["#5bb04e", "#4aa043", "#6cc05c"], castle: ["#9fb07a", "#b2c28a", "#8ea06c"], swamp: ["#58714a", "#4b6340", "#6a8455"],
+  peaks: ["#9a9aa8", "#86869a", "#b0b0bd"], ruins: ["#d1b47a", "#c2a46a", "#dec48c"], harbor: ["#e7d397", "#dac684", "#f0dea6"],
+  citadel: ["#8a72c8", "#7a62b8", "#9a84d4"], docks: ["#a5784a", "#946a3e", "#b68856"], summit: ["#eef6ff", "#dce9f5", "#ffffff"],
 };
-function seeded(i) { const x = Math.sin(i * 9301 + 49297) * 233280; return x - Math.floor(x); }
-function drawWorld(modules) {
-  const cv = $("mapCanvas"), ctx = cv.getContext("2d"), W = cv.width, H = cv.height;
-  // sea + land
-  ctx.fillStyle = "#3d8fe0"; ctx.fillRect(0, 0, W, H);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    let best = 1e9, mi = 0;
-    NODE_POS.forEach(([nx, ny], i) => { const d = (nx - x) ** 2 + (ny - y) ** 2 * 1.3 + seeded(x * 31 + y * 17 + i) * 60; if (d < best) { best = d; mi = i; } });
-    if (best > 520) continue; // ocean around the island
-    const t = TERRAIN[modules[mi].terrain]; const locked = !modules[mi].open;
-    ctx.fillStyle = (seeded(x * 7 + y * 13) > 0.82 ? t[1] : t[0]);
-    ctx.fillRect(x, y, 1, 1);
-    if (locked) { ctx.fillStyle = "rgba(28,22,48,0.35)"; ctx.fillRect(x, y, 1, 1); }
+function rnd(i) { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
+let mapOwner = null;
+function buildOwners() {
+  mapOwner = new Int8Array(MW * MH).fill(-1);
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    let best = 1e9, mi = -1;
+    NODE_POS.forEach(([nx, ny], i) => { const d = (nx - x) ** 2 + ((ny - y) * 1.25) ** 2 + rnd(x * 31 + y * 17 + i) * 140; if (d < best) { best = d; mi = i; } });
+    if (best < 1500 + rnd(x * 3 + y * 7) * 300) mapOwner[y * MW + x] = mi;
   }
-  // the road between lands
-  ctx.fillStyle = "#e9d39a";
+}
+function sprite(ctx, x, y, rows, pal) { rows.forEach((r, dy) => [...r].forEach((ch, dx) => { if (ch !== "." && pal[ch]) { ctx.fillStyle = pal[ch]; ctx.fillRect(x + dx, y + dy, 1, 1); } })); }
+const SPR = {
+  tree: ["..g..", ".ggg.", "ggGgg", ".ggg.", "..n.."],
+  pine: ["...g...", "..ggg..", ".ggGgg.", "..ggg..", ".ggggg.", "ggggGgg", "...n..."],
+  flower: [".r.", "ryr", ".l."],
+  house: ["...rr...", "..rrrr..", ".rrrrrr.", "rrrrrrrr", ".wwwwww.", ".wdwwnw.", ".wwwwnw."],
+  rock: [".kk.", "kKKk", "kKKk"],
+  caveMouth: ["..kkkk..", ".kKKKKk.", "kKk..kKk", "kK....Kk", "kK....Kk"],
+  crystal: [".c.", "cCc", "cCc"],
+  bridge: ["nnnnnnnnnn", "n.n.n.n.n.", "nnnnnnnnnn"],
+  castle: ["r.........", "rr........", "r..w...w..", "k.kkk.kkk.", "kkKkkkkKkk", "kkkkkkkkkk", "kKkkkkkkKk", "kkkk..kkkk", "kkkk..kkkk"],
+  reed: ["n.n", "lnl", ".l.", ".l."],
+  lily: [".ll.", "llrl", ".ll."],
+  mountain: ["....w....", "...www...", "..wkkKk..", ".kkkKkkk.", "kkkkkkKkk"],
+  pillar: ["kkk", ".k.", ".K.", ".k.", ".K.", "kkk"],
+  broken: ["kk.", ".k.", ".K.", "kkk"],
+  ship: ["...w...", "..ww...", ".www...", "..n....", "nnnnnnn", ".nnnnn."],
+  tower: [".y.", "vvv", "vVv", "vvv", "vVv", "vvv", "vVv", "vvv"],
+  crate: ["nnn", "nNn", "nnn"],
+  crane: ["kkkkkk", "k....n", "k....n", "k.....", "k.....", "kk...."],
+  bigpeak: ["......y......", "......y......", ".....www.....", "....wwwww....", "...wwkwwkw...", "..wkkkwkkkw..", ".kkkKkkkkKkk.", "kkkkkkkkkkkkk"],
+};
+const SP = { g: "#1f6a2a", G: "#2f8a3a", n: "#6a4422", N: "#8a5a2b", r: "#c8453a", y: "#ffcc33", l: "#3f9a4b", w: "#ffffff", d: "#3a2717", k: "#5a5668", K: "#77738a", c: "#7ee8ff", C: "#c9f6ff", v: "#5a3aa0", V: "#7a4fd6" };
+const LANDMARKS = [
+  [["house", 18, 150], ["flower", 44, 176], ["flower", 14, 180], ["flower", 50, 160], ["tree", 6, 160], ["flower", 32, 186]],
+  [["pine", 52, 120], ["pine", 74, 124], ["pine", 60, 146], ["tree", 82, 150], ["pine", 46, 134], ["tree", 70, 160]],
+  [["caveMouth", 26, 92], ["rock", 52, 112], ["crystal", 44, 88], ["crystal", 20, 112], ["rock", 30, 118]],
+  [["bridge", 86, 84], ["tree", 108, 104], ["tree", 74, 104]],
+  [["castle", 118, 108], ["tree", 140, 140], ["flower", 112, 140]],
+  [["reed", 158, 146], ["lily", 176, 170], ["reed", 182, 150], ["lily", 156, 172], ["reed", 170, 176]],
+  [["mountain", 188, 98], ["mountain", 204, 128], ["mountain", 214, 104]],
+  [["pillar", 160, 66], ["broken", 186, 70], ["pillar", 178, 88], ["broken", 164, 90]],
+  [["ship", 236, 36], ["ship", 206, 30], ["crate", 228, 62]],
+  [["tower", 264, 70], ["tower", 248, 96], ["flower", 270, 104]],
+  [["crane", 276, 116], ["crate", 296, 144], ["crate", 292, 140], ["crate", 270, 150], ["ship", 300, 160]],
+  [["bigpeak", 284, 6], ["mountain", 270, 40], ["mountain", 302, 44]],
+];
+let waveT = 0, mapMods = null;
+function drawWorld(mods) {
+  mapMods = mods;
+  if (!mapOwner) buildOwners();
+  const ctx = $("mapCanvas").getContext("2d");
+  const img = ctx.createImageData(MW, MH), D = img.data, cache = {};
+  const col = (h) => cache[h] || (cache[h] = [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]);
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    const o = mapOwner[y * MW + x]; let c;
+    if (o < 0) {
+      const near = (x > 0 && mapOwner[y * MW + x - 1] >= 0) || (x < MW - 1 && mapOwner[y * MW + x + 1] >= 0) || (y > 0 && mapOwner[(y - 1) * MW + x] >= 0) || (y < MH - 1 && mapOwner[(y + 1) * MW + x] >= 0);
+      c = near ? col("#e8f6ff") : ((x + y * 3 + waveT) % 23 === 0 && y % 6 === 0) ? col("#8fc9f5") : col(rnd(x * 7 + y) > 0.5 ? "#3d86d6" : "#3a80cf");
+    } else {
+      const t = TERRAIN[mods[o].terrain], r = rnd(x * 7 + y * 13);
+      c = col(r > 0.86 ? t[1] : r > 0.72 ? t[2] : t[0]);
+      const right = x < MW - 1 ? mapOwner[y * MW + x + 1] : o, down = y < MH - 1 ? mapOwner[(y + 1) * MW + x] : o;
+      if ((right >= 0 && right !== o) || (down >= 0 && down !== o)) c = col("#4f3015");
+      if (!mods[o].open) c = c.map((v) => Math.round(v * 0.62 + 40 * 0.38));
+    }
+    const i = (y * MW + x) * 4; D[i] = c[0]; D[i + 1] = c[1]; D[i + 2] = c[2]; D[i + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  ctx.fillStyle = "#4f9fe8";
+  for (let s = 0; s < 70; s++) { const x = 70 + s, y = Math.round(80 + Math.sin(s / 7) * 5); if (mapOwner[y * MW + x] === 3 || mapOwner[y * MW + x] === 2) ctx.fillRect(x, y, 2, 3); }
   for (let i = 0; i < NODE_POS.length - 1; i++) {
     const [ax, ay] = NODE_POS[i], [bx, by] = NODE_POS[i + 1];
     const steps = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
-    for (let s = 0; s <= steps; s += 2) { const x = Math.round(ax + (bx - ax) * s / steps), y = Math.round(ay + (by - ay) * s / steps); ctx.fillRect(x, y, 2, 2); }
+    for (let s = 0; s <= steps; s++) {
+      const x = Math.round(ax + (bx - ax) * s / steps), y = Math.round(ay + (by - ay) * s / steps);
+      ctx.fillStyle = s % 4 < 2 ? "#f0dca4" : "#d9bf7a"; ctx.fillRect(x, y, 2, 2);
+    }
   }
-  // little landmarks
-  const mark = (x, y, rows, pal) => rows.forEach((r, dy) => [...r].forEach((ch, dx) => { if (ch !== ".") { ctx.fillStyle = pal[ch]; ctx.fillRect(x + dx, y + dy, 1, 1); } }));
-  const tree = ["..g..", ".ggg.", "ggggg", "..n.."], towers = ["k.k.k", "kkkkk", "kwkwk", "kkkkk"], peak = ["..w..", ".wgw.", "ggggg"];
-  const P = { g: "#1f5a2a", n: "#5a3a22", k: "#4a4a5a", w: "#ffffff" };
-  [[40, 92], [30, 60], [44, 70], [20, 74]].forEach(([x, y]) => mark(x, y, tree, P));
-  mark(70, 66, towers, P); mark(130, 22, towers, { ...P, k: "#5a3aa0" }); mark(166, 8, peak, P); mark(150, 40, peak, P);
+  LANDMARKS.forEach((list, i) => { ctx.globalAlpha = mods[i].open ? 1 : 0.55; for (const [name, x, y] of list) sprite(ctx, x, y, SPR[name], SP); });
+  ctx.globalAlpha = 1;
+}
+function layoutMap() {
+  const frame = $("mapFrame"), wrap = $("mapWrap");
+  const fw = frame.clientWidth - 28, fh = frame.clientHeight - 28;
+  const scale = Math.max(1, Math.min(fw / MW, fh / MH));
+  wrap.style.width = Math.floor(MW * scale) + "px"; wrap.style.height = Math.floor(MH * scale) + "px";
+  return scale;
 }
 
 /* ================= Tiny safe markdown ================= */
@@ -371,53 +429,56 @@ function inline(node, text) {
 }
 
 /* ================= App state ================= */
-let S = null, current = null, lastError = "", chat = [], selectedModule = 0;
+let G = null, current = null, lastError = "", chat = [], selectedModule = 0;
 const floatText = (t) => { const f = el("div", "float", t); document.body.append(f); setTimeout(() => f.remove(), 1800); };
 function show(screen) {
   for (const id of ["screenStart", "screenWorld", "screenLesson"]) $(id).hidden = id !== screen;
   $("hud").hidden = screen === "screenStart";
-  window.scrollTo(0, 0);
 }
 function modulesWithStatus() {
-  return S.modules.map((m) => {
-    const exs = S.exercises.filter((e) => e.module === m.id);
+  return G.modules.map((m) => {
+    const exs = G.exercises.filter((e) => e.module === m.id);
     return { ...m, exs, open: exs.length > 0, done: exs.length > 0 && exs.every((e) => e.passed) };
   });
 }
+const modelLabel = () => { const m = G.models.find((x) => x.id === (G.config.claude_model || "")); return m ? m.label.split(" · ")[0] : G.config.claude_model; };
 function renderHud() {
-  const { level, save, config } = S;
+  const { level, save, config } = G;
   drawHero($("hudHero"), level.n, config.hero_color);
   $("hudName").textContent = config.name.toUpperCase();
   $("hudRank").textContent = `Lv ${level.n} · ${level.name}`;
   $("xpFill").style.width = (level.to ? Math.max(3, ((save.xp - level.from) / (level.to - level.from)) * 100) : 100) + "%";
   $("xpText").textContent = level.to ? `${save.xp}/${level.to}` : `${save.xp} MAX`;
-  $("goalFill").style.width = Math.min(100, (S.doneToday / config.daily_goal) * 100) + "%";
-  $("goalText").textContent = `${S.doneToday}/${config.daily_goal}`;
+  $("goalFill").style.width = Math.min(100, (G.doneToday / config.daily_goal) * 100) + "%";
+  $("goalText").textContent = `${G.doneToday}/${config.daily_goal}`;
   $("streak").textContent = `🔥 ${save.streak} DAY${save.streak === 1 ? "" : "S"}`;
+  $("modelTag").textContent = G.claude ? `Pip: ${modelLabel()}` : "Pip offline";
+  $("pipModel").textContent = G.claude ? `thinking with ${modelLabel()}` : "Claude Code not found";
 }
 function renderWorld() {
   const mods = modulesWithStatus();
+  const scale = layoutMap();
   drawWorld(mods);
-  const here = mods.findIndex((m) => m.open && !m.done);
+  const here = Math.max(0, mods.findIndex((m) => m.open && !m.done));
   const box = $("nodes"); box.textContent = "";
-  const cv = $("mapCanvas");
   mods.forEach((m, i) => {
-    const b = el("button", "node" + (m.done ? " done" : "") + (!m.open ? " locked" : "") + (i === here ? " here" : "") + (i === selectedModule ? " sel" : ""), String(m.n));
-    b.style.left = `calc(10px + ${(NODE_POS[i][0] / 192) * 100}% * ${cv.clientWidth / (cv.parentElement.clientWidth - 20 || 1)})`;
-    b.style.left = (10 + (NODE_POS[i][0] / 192) * cv.clientWidth) + "px";
-    b.style.top = (10 + (NODE_POS[i][1] / 120) * cv.clientHeight) + "px";
-    b.title = m.land; b.setAttribute("aria-label", `Module ${m.n}: ${m.land}${m.open ? "" : " (coming soon)"}`);
+    const b = el("button", "node" + (m.done ? " done" : "") + (!m.open ? " locked" : "") + (i === here ? " here" : "") + (i === selectedModule ? " sel" : ""), m.open ? String(m.n) : "🔒");
+    b.style.left = NODE_POS[i][0] * scale + "px"; b.style.top = NODE_POS[i][1] * scale + "px";
+    b.append(el("span", "tag", m.land.toUpperCase()));
+    b.setAttribute("aria-label", `Land ${m.n}: ${m.land}${m.open ? "" : " (locked)"}`);
     b.addEventListener("click", () => { selectedModule = i; renderWorld(); });
     box.append(b);
   });
+  const hero = $("heroToken"); drawHero(hero, G.level.n, G.config.hero_color);
+  hero.style.left = NODE_POS[here][0] * scale + 20 + "px"; hero.style.top = NODE_POS[here][1] * scale + 6 + "px";
   renderRegion(mods[selectedModule]);
 }
 function renderRegion(m) {
   const r = $("region"); r.textContent = "";
-  r.append(el("div", "label", `MODULE ${m.n} OF 12`), el("h3", null, m.land.toUpperCase()), el("div", "sub", m.name));
+  r.append(el("div", "label", `LAND ${m.n} OF 12`), el("h3", null, m.land.toUpperCase()), el("div", "sub", m.name));
   const t = el("div", "topics"); m.topics.forEach((x) => t.append(el("span", null, x))); r.append(t);
-  if (!m.open) { r.append(el("div", "coming", `🔒 This land opens soon. Boss: ${m.build}. Ask in your project chat to unlock it next.`)); return; }
-  const ul = el("ul"); let lastLesson = null;
+  if (!m.open) { r.append(el("div", "coming", `🔒 Locked for now. Boss: ${m.build}. This land gets its lessons in a future update.`)); return; }
+  const ul = el("ul", "region-list"); let lastLesson = null;
   for (const ex of m.exs) {
     if (ex.lesson !== lastLesson) { lastLesson = ex.lesson; ul.append(el("li", "lesson-head", ex.lesson.replace(/^\d+_/, "").replace(/_/g, " ").toUpperCase())); }
     const li = el("li"); const b = el("button", "lesson-btn" + (ex.passed ? " done" : "") + (ex.build ? " boss" : ""));
@@ -426,14 +487,14 @@ function renderRegion(m) {
   }
   r.append(ul);
   const next = m.exs.find((e) => !e.passed);
-  if (next) { const go = el("button", "btn", next === m.exs[0] ? "▶ ENTER" : "▶ CONTINUE"); go.addEventListener("click", () => openExercise(next.id)); r.append(go); }
+  if (next) { const go = el("button", "btn", next === m.exs[0] ? "▶ ENTER LAND" : "▶ CONTINUE"); go.addEventListener("click", () => openExercise(next.id)); r.append(go); }
 }
-async function refresh() { S = await api("/api/state"); renderHud(); }
+async function refresh() { G = await api("/api/state"); renderHud(); }
 
 /* ================= Lesson ================= */
 async function openExercise(id) {
   current = await api("/api/exercise/" + id);
-  const mod = S.modules.find((m) => m.id === current.module);
+  const mod = G.modules.find((m) => m.id === current.module);
   $("crumb").textContent = `${mod ? mod.land.toUpperCase() : ""} · ${current.id}`;
   $("exTitle").textContent = (current.build ? "BOSS · " : "") + current.title + (current.passed ? " ✓" : "");
   md($("notes"), current.lessonNotes);
@@ -442,9 +503,9 @@ async function openExercise(id) {
   $("inputsWrap").hidden = !current.needsInput;
   setConsole([["dim", "Write your code, press ▶ RUN to try it, then ⚔ CHECK to face the tests."]]);
   lastError = ""; chat = []; $("chat").textContent = "";
-  say("pip", S.config.language === "es"
-    ? `¡Vamos, ${S.config.name}! Lee la lección de la izquierda y luego escribe tu código. Si te atascas, pregúntame.`
-    : `Let's go, ${S.config.name}! Read the lesson on the left, then write your code. If you get stuck, ask me.`);
+  say("pip", G.config.language === "es"
+    ? `¡Vamos, ${G.config.name}! Lee la lección de la izquierda y luego escribe tu código. Si te atascas, pregúntame.`
+    : `Let's go, ${G.config.name}! Read the lesson on the left, then write your code. If you get stuck, ask me.`);
   show("screenLesson");
 }
 function setConsole(parts) { const c = $("console"); c.textContent = ""; for (const [cls, t] of parts) c.append(el("span", cls, t)); }
@@ -463,20 +524,20 @@ $("runBtn").onclick = async () => {
 $("checkBtn").onclick = async () => {
   busy(true); setConsole([["dim", "Facing the tests…"]]);
   const r = await api("/api/check", { id: current.id, code: $("code").value });
-  setConsole(r.report.split("\n").map((l) => [/✗|Not yet/.test(l) ? "err" : /✓|PASSED/.test(l) ? "ok" : /XP|LEVEL/.test(l) ? "xp" : "", l + "\n"]));
+  setConsole(r.report.split("\n").filter((l, i, a) => l.trim() || (a[i - 1] || "").trim()).map((l) => [/✗|Not yet/.test(l) ? "err" : /✓|PASSED/.test(l) ? "ok" : /XP|LEVEL/.test(l) ? "xp" : "", l + "\n"]));
   busy(false);
   let delay = 0;
   for (const e of r.events) { setTimeout(() => floatText(e.levelUp ? `LEVEL UP! ${e.levelUp.toUpperCase()}` : `+${e.xp} XP`), delay); delay += 900; }
   await refresh();
   if (r.passed) { current.passed = true; $("exTitle").textContent = (current.build ? "BOSS · " : "") + current.title + " ✓"; }
 };
-$("hintBtn").onclick = async () => { const r = await api("/api/hint", { id: current.id }); setConsole([["xp", r.text]]); };
+$("hintBtn").onclick = async () => { const r = await api("/api/hint", { id: current.id }); setConsole([["xp", r.text.trim()]]); };
 $("code").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("runBtn").click(); }
   if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); const t = e.target, s = t.selectionStart; t.value = t.value.slice(0, s) + "    " + t.value.slice(t.selectionEnd); t.selectionStart = t.selectionEnd = s + 4; }
 });
-$("backBtn").onclick = () => { show("screenWorld"); renderWorld(); };
-$("mapBtn").onclick = () => { show("screenWorld"); renderWorld(); };
+const toMap = () => { show("screenWorld"); renderWorld(); };
+$("backBtn").onclick = toMap; $("mapBtn").onclick = toMap;
 
 /* ================= Pip ================= */
 function say(who, text) { const d = el("div", "say " + who); who === "me" ? (d.textContent = text) : md(d, text); $("chat").append(d); $("chat").scrollTop = 1e9; return d; }
@@ -498,50 +559,52 @@ document.querySelectorAll(".q").forEach((b) => b.addEventListener("click", () =>
 let pickedColor = "blue";
 function typeText(node, text) {
   node.textContent = ""; let i = 0;
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce) { node.textContent = text; node.classList.remove("typing"); return; }
-  const t = setInterval(() => { node.textContent = text.slice(0, ++i); if (i >= text.length) { clearInterval(t); node.classList.remove("typing"); } }, 28);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { node.textContent = text; node.classList.remove("typing"); return; }
+  const t = setInterval(() => { node.textContent = text.slice(0, ++i); if (i >= text.length) { clearInterval(t); node.classList.remove("typing"); } }, 26);
 }
 function startScreen() {
   show("screenStart");
   typeText($("introText"), "PIP: Hola, traveler! I'm Pip, a Python snake. Twelve lands lie between you and the title of Python Master. Before we begin… what is your name?");
   const sw = $("swatches"); sw.textContent = "";
+  const paint = () => { [...sw.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.c === pickedColor))); drawHero($("startHero"), 1, pickedColor); };
   for (const [name, hex] of Object.entries(COLORS)) {
-    const b = el("button", "sw"); b.type = "button"; b.style.background = hex; b.setAttribute("aria-label", name); b.setAttribute("aria-pressed", String(name === pickedColor));
-    b.onclick = () => { pickedColor = name; startScreen.paint(); }; sw.append(b);
+    const b = el("button", "sw"); b.type = "button"; b.style.background = hex; b.dataset.c = name; b.setAttribute("aria-label", name);
+    b.onclick = () => { pickedColor = name; paint(); }; sw.append(b);
   }
-  startScreen.paint = () => { [...sw.children].forEach((b) => b.setAttribute("aria-pressed", String(b.getAttribute("aria-label") === pickedColor))); drawHero($("startHero"), 1, pickedColor); };
-  startScreen.paint();
-  $("heroName").focus();
+  paint(); $("heroName").focus();
 }
 $("nameForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = $("heroName").value.trim(); if (!name) return;
   await api("/api/config", { name, hero_color: pickedColor, language: $("startLang").value });
   await refresh(); floatText(`WELCOME, ${name.toUpperCase()}!`);
-  show("screenWorld"); renderWorld();
+  toMap();
 });
 
 /* ================= Settings ================= */
 $("settingsBtn").onclick = () => {
-  const c = S.config; $("sName").value = c.name; $("sLang").value = c.language; $("sColor").value = c.hero_color; $("sGoal").value = c.daily_goal; $("sModel").value = c.claude_model || "";
-  $("claudeHelp").textContent = S.claude ? "✓ Claude Code found. Pip uses your Claude account." : "Claude Code isn't installed. In your terminal: npm install -g @anthropic-ai/claude-code, then run claude once to sign in.";
+  const c = G.config;
+  const sel = $("sModel"); sel.textContent = "";
+  for (const m of G.models) { const o = el("option", null, m.label); o.value = m.id; sel.append(o); }
+  $("sName").value = c.name; $("sLang").value = c.language; $("sColor").value = c.hero_color; $("sGoal").value = c.daily_goal; sel.value = c.claude_model || "";
+  $("claudeHelp").textContent = G.claude ? "✓ Claude Code found. Pip uses your Claude account." : "Claude Code isn't installed. In your terminal: npm install -g @anthropic-ai/claude-code, then run claude once to sign in.";
   $("settings").showModal();
 };
 $("settingsForm").addEventListener("submit", async (e) => {
   if (e.submitter && e.submitter.value === "save") {
-    await api("/api/config", { name: $("sName").value.trim() || S.config.name, language: $("sLang").value, hero_color: $("sColor").value,
-      daily_goal: Math.max(1, Math.min(20, parseInt($("sGoal").value, 10) || 3)), claude_model: $("sModel").value.trim() });
+    await api("/api/config", { name: $("sName").value.trim() || G.config.name, language: $("sLang").value, hero_color: $("sColor").value,
+      daily_goal: Math.max(1, Math.min(20, parseInt($("sGoal").value, 10) || 3)), claude_model: $("sModel").value });
     await refresh(); if (!$("screenWorld").hidden) renderWorld();
   }
 });
-window.addEventListener("resize", () => { if (!$("screenWorld").hidden) renderWorld(); });
+let resizeT; window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (!$("screenWorld").hidden) renderWorld(); }, 120); });
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => { if (!$("screenWorld").hidden && mapMods) { waveT = (waveT + 1) % 23; drawWorld(mapMods); } }, 700);
 
 (async () => {
   await refresh();
-  if (!S.configured) { startScreen(); return; }
+  if (!G.configured) { startScreen(); return; }
   const mods = modulesWithStatus(); selectedModule = Math.max(0, mods.findIndex((m) => m.open && !m.done));
-  show("screenWorld"); renderWorld();
+  toMap();
 })();
 </script>
 </body>
