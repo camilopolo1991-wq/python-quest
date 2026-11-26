@@ -1,0 +1,50 @@
+{
+  "id": "m1-06a",
+  "title": "Adult check",
+  "task": [
+    "Ask the age with int(input(\"Age: \")).",
+    "Print Adult if 18 or more, otherwise Minor."
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "18 should say Adult. Is that > or >= ?"
+  ],
+  "tests": [
+    {
+      "label": "20 → Adult",
+      "inputs": [
+        "20"
+      ],
+      "contains": [
+        "Adult"
+      ],
+      "not_contains": [
+        "Minor"
+      ]
+    },
+    {
+      "label": "15 → Minor",
+      "inputs": [
+        "15"
+      ],
+      "contains": [
+        "Minor"
+      ],
+      "not_contains": [
+        "Adult"
+      ]
+    },
+    {
+      "label": "18 → Adult",
+      "inputs": [
+        "18"
+      ],
+      "contains": [
+        "Adult"
+      ],
+      "not_contains": [
+        "Minor"
+      ]
+    }
+  ]
+}

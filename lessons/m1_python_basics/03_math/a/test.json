@@ -1,0 +1,20 @@
+{
+  "id": "m1-03a",
+  "title": "Bus fare",
+  "task": [
+    "A bus ride costs 2950 pesos. You ride 2 times a day, 5 days a week.",
+    "Make variables fare, trips_per_day and days.",
+    "Print the total for the week."
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Multiply the three variables together.",
+    "print(fare * trips_per_day * days)"
+  ],
+  "tests": [
+    {
+      "label": "Prints 29500",
+      "exact": "29500"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "m1-08a",
+  "title": "Secret door",
+  "task": [
+    "Keep asking Password: until the user types python.",
+    "Each wrong try prints Wrong!",
+    "When it's right, print Access granted"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "while password != \"python\":",
+    "Ask again inside the loop, or it never ends."
+  ],
+  "tests": [
+    {
+      "label": "Right first time",
+      "inputs": [
+        "python"
+      ],
+      "contains": [
+        "Access granted"
+      ],
+      "not_contains": [
+        "Wrong"
+      ]
+    },
+    {
+      "label": "Two wrong tries, then right",
+      "inputs": [
+        "java",
+        "hola",
+        "python"
+      ],
+      "contains": [
+        "Wrong!",
+        "Access granted"
+      ]
+    }
+  ]
+}

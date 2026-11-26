@@ -1,0 +1,26 @@
+{
+  "id": "m1-04a",
+  "title": "Arepa order",
+  "task": [
+    "food is \"arepa\", price is 3500, qty is 3.",
+    "Print with one f-string: 3 arepa cost 10500 pesos"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Start with print(f\"...\")",
+    "Math works inside braces: {price * qty}"
+  ],
+  "tests": [
+    {
+      "label": "Prints 3 arepa cost 10500 pesos",
+      "exact": "3 arepa cost 10500 pesos"
+    },
+    {
+      "label": "Uses an f-string",
+      "source_contains": [
+        "f\""
+      ],
+      "contains": []
+    }
+  ]
+}

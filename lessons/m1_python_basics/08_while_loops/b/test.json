@@ -1,0 +1,27 @@
+{
+  "id": "m1-08b",
+  "title": "Savings goal",
+  "task": [
+    "You save 50000 pesos every month, starting from 0.",
+    "Use a while loop to count the months until you have at least 300000.",
+    "Print: 6 months"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "while saved < 300000:",
+    "Add to both saved and months inside the loop."
+  ],
+  "tests": [
+    {
+      "label": "Prints 6 months",
+      "exact": "6 months"
+    },
+    {
+      "label": "Uses a while loop",
+      "source_contains": [
+        "while "
+      ],
+      "contains": []
+    }
+  ]
+}

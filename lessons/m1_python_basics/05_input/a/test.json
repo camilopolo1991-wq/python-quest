@@ -1,0 +1,33 @@
+{
+  "id": "m1-05a",
+  "title": "Greeter",
+  "task": [
+    "Ask: What's your name?",
+    "Then print: Hola, <name>!"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "name = input(\"What's your name? \")",
+    "Then use an f-string with {name}."
+  ],
+  "tests": [
+    {
+      "label": "Camilo → Hola, Camilo!",
+      "inputs": [
+        "Camilo"
+      ],
+      "contains": [
+        "Hola, Camilo!"
+      ]
+    },
+    {
+      "label": "Ana → Hola, Ana!",
+      "inputs": [
+        "Ana"
+      ],
+      "contains": [
+        "Hola, Ana!"
+      ]
+    }
+  ]
+}

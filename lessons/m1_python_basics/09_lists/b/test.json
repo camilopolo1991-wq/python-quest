@@ -1,0 +1,22 @@
+{
+  "id": "m1-09b",
+  "title": "Grade report",
+  "task": [
+    "scores = [7, 9, 4, 10]",
+    "Print the best, worst and average like:",
+    "Best: 10",
+    "Worst: 4",
+    "Average: 7.5"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "max(), min(), sum() and len() all work on lists.",
+    "Average = sum(scores) / len(scores)"
+  ],
+  "tests": [
+    {
+      "label": "Best, worst, average",
+      "exact": "Best: 10\nWorst: 4\nAverage: 7.5"
+    }
+  ]
+}

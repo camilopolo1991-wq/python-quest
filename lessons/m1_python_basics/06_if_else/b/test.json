@@ -1,0 +1,54 @@
+{
+  "id": "m1-06b",
+  "title": "Weather report",
+  "task": [
+    "Ask the temperature (float).",
+    "Above 28: Hot. From 18 to 28: Nice. Below 18: Cold."
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Use if, elif and else.",
+    "Check the biggest case first: if temp > 28."
+  ],
+  "tests": [
+    {
+      "label": "31 → Hot",
+      "inputs": [
+        "31"
+      ],
+      "contains": [
+        "Hot"
+      ],
+      "not_contains": [
+        "Nice",
+        "Cold"
+      ]
+    },
+    {
+      "label": "22.5 → Nice",
+      "inputs": [
+        "22.5"
+      ],
+      "contains": [
+        "Nice"
+      ],
+      "not_contains": [
+        "Hot",
+        "Cold"
+      ]
+    },
+    {
+      "label": "12 → Cold",
+      "inputs": [
+        "12"
+      ],
+      "contains": [
+        "Cold"
+      ],
+      "not_contains": [
+        "Hot",
+        "Nice"
+      ]
+    }
+  ]
+}

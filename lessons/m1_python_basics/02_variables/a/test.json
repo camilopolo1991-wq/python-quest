@@ -1,0 +1,26 @@
+{
+  "id": "m1-02a",
+  "title": "Player card",
+  "task": [
+    "Make a variable player with the text Pip and a variable lives with the number 3.",
+    "Print: Pip has 3 lives",
+    "Use the variables, don't type Pip or 3 inside the print."
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "print() can take several things separated by commas: print(player, \"has\", lives, \"lives\")"
+  ],
+  "tests": [
+    {
+      "label": "Prints Pip has 3 lives",
+      "exact": "Pip has 3 lives"
+    },
+    {
+      "label": "Uses the variables in print()",
+      "source_contains": [
+        "print(player"
+      ],
+      "contains": []
+    }
+  ]
+}

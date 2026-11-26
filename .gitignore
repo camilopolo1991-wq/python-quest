@@ -1,0 +1,6 @@
+# your personal save and settings
+.quest/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

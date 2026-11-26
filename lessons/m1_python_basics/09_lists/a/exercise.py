@@ -1,0 +1,2 @@
+bag = ["mango", "lulo", "banano"]
+

@@ -1,0 +1,26 @@
+{
+  "id": "m1-02b",
+  "title": "Score up",
+  "task": [
+    "score starts at 10.",
+    "Add 5 to score by changing the variable (score = score + 5).",
+    "Print score. It should show 15."
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Write score = score + 5 before the print."
+  ],
+  "tests": [
+    {
+      "label": "Prints 15",
+      "exact": "15"
+    },
+    {
+      "label": "Changes the variable",
+      "source_contains": [
+        "score = score + 5"
+      ],
+      "contains": []
+    }
+  ]
+}

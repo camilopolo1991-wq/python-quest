@@ -1,0 +1,18 @@
+{
+  "id": "m1-04b",
+  "title": "Pretty money",
+  "task": [
+    "total is 1234567.891",
+    "Print: Total: $1,234,567.89 (comma separator and 2 decimals)"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Inside the braces, after a colon, you can add a format: {total:,.2f}"
+  ],
+  "tests": [
+    {
+      "label": "Prints Total: $1,234,567.89",
+      "exact": "Total: $1,234,567.89"
+    }
+  ]
+}

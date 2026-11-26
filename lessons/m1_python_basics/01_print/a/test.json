@@ -1,0 +1,20 @@
+{
+  "id": "m1-01a",
+  "title": "Say hello",
+  "task": [
+    "Print exactly two lines:",
+    "Hola, mundo!",
+    "I am learning Python"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Use print() twice, once per line.",
+    "Text needs quotes: print(\"Hola, mundo!\")"
+  ],
+  "tests": [
+    {
+      "label": "Prints the two lines exactly",
+      "exact": "Hola, mundo!\nI am learning Python"
+    }
+  ]
+}

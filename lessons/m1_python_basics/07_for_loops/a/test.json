@@ -1,0 +1,26 @@
+{
+  "id": "m1-07a",
+  "title": "Rocket countdown",
+  "task": [
+    "Count down from 5 to 1, one number per line.",
+    "Then print Despegue!"
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "Inside the loop: print(n)",
+    "Despegue! goes after the loop, with no spaces in front."
+  ],
+  "tests": [
+    {
+      "label": "5 4 3 2 1 Despegue!",
+      "exact": "5\n4\n3\n2\n1\nDespegue!"
+    },
+    {
+      "label": "Uses a for loop",
+      "source_contains": [
+        "for "
+      ],
+      "contains": []
+    }
+  ]
+}

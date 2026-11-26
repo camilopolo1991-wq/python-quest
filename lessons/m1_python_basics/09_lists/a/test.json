@@ -1,0 +1,29 @@
+{
+  "id": "m1-09a",
+  "title": "Market bag",
+  "task": [
+    "Start with bag = [\"mango\", \"lulo\", \"banano\"]",
+    "Add \"guava\" with .append()",
+    "Print each fruit on its own line, then print the count."
+  ],
+  "file": "exercise.py",
+  "hints": [
+    "bag.append(\"guava\")",
+    "for fruit in bag: then print(fruit)",
+    "print(len(bag)) goes after the loop."
+  ],
+  "tests": [
+    {
+      "label": "Prints 4 fruits then 4",
+      "exact": "mango\nlulo\nbanano\nguava\n4"
+    },
+    {
+      "label": "Uses .append() and len()",
+      "source_contains": [
+        ".append(",
+        "len("
+      ],
+      "contains": []
+    }
+  ]
+}
