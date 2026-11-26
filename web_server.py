@@ -245,6 +245,19 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"error": "unknown exercise"}, 404)
 
 
+def open_browser(url: str) -> None:
+    """Opens the page. On WSL, uses the Windows browser (Linux browser helpers fail there)."""
+    try:
+        if "microsoft" in Path("/proc/version").read_text().lower():
+            subprocess.Popen(["cmd.exe", "/c", "start", url.replace("&", "^&")],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return
+    except OSError:
+        pass
+    with contextlib.suppress(Exception):
+        webbrowser.open(url)
+
+
 def serve() -> None:
     quest.USE_COLOR = False
     server = ThreadingHTTPServer((HOST, PORT), Handler)
@@ -252,8 +265,7 @@ def serve() -> None:
     print(f"\n  Python Quest is running at {url}")
     print("  (On WSL, open that address in your Windows browser.)")
     print("  Press Ctrl + C to stop.\n")
-    with contextlib.suppress(Exception):
-        webbrowser.open(url)
+    open_browser(url)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
