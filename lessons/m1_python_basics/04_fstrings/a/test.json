@@ -1,26 +1,52 @@
 {
   "id": "m1-04a",
-  "title": "Arepa order",
-  "task": [
-    "food is \"arepa\", price is 3500, qty is 3.",
-    "Print with one f-string: 3 arepa cost 10500 pesos"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Start with print(f\"...\")",
-    "Math works inside braces: {price * qty}"
-  ],
-  "tests": [
-    {
-      "label": "Prints 3 arepa cost 10500 pesos",
-      "exact": "3 arepa cost 10500 pesos"
-    },
-    {
-      "label": "Uses an f-string",
-      "source_contains": [
-        "f\""
-      ],
-      "contains": []
-    }
-  ]
+  "en": {
+    "title": "Arepa order",
+    "task": [
+      "food is \"arepa\", price is 3500, qty is 3.",
+      "Print with one f-string: 3 arepa cost 10500 pesos"
+    ],
+    "hints": [
+      "Start with print(f\"...\")",
+      "Math works inside braces: {price * qty}"
+    ],
+    "tests": [
+      {
+        "label": "Prints 3 arepa cost 10500 pesos",
+        "exact": "3 arepa cost 10500 pesos"
+      },
+      {
+        "label": "Uses an f-string",
+        "source_contains": [
+          "f\""
+        ],
+        "contains": []
+      }
+    ]
+  },
+  "es": {
+    "title": "Pedido de arepas",
+    "task": [
+      "comida es \"arepas\", precio es 3500, cantidad es 3.",
+      "Imprime con un solo f-string: 3 arepas cuestan 10500 pesos"
+    ],
+    "hints": [
+      "Empieza con print(f\"...\")",
+      "Las cuentas funcionan dentro de llaves: {precio * cantidad}"
+    ],
+    "tests": [
+      {
+        "label": "Imprime 3 arepas cuestan 10500 pesos",
+        "exact": "3 arepas cuestan 10500 pesos"
+      },
+      {
+        "label": "Usa un f-string",
+        "source_contains": [
+          "f\""
+        ],
+        "contains": []
+      }
+    ]
+  }
 }

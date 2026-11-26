@@ -21,7 +21,7 @@ cd python-quest
 python3 quest.py web        # opens the game in your browser
 ```
 
-The first screen asks your name, your hero's color and which language Pip speaks. On WSL, open the address it prints (`http://127.0.0.1:8765`) in your Windows browser.
+The first screen asks your language (English or Español), your name and your hero's color. The language switches everything: the game screens, lessons, exercises, tests, hints and Pip. Change it any time in ⚙ Settings. On WSL, open the address it prints (`http://127.0.0.1:8765`) in your Windows browser.
 
 **Pip, the tutor**, uses the Claude Code installed on your computer, signed in with your Claude account. If you don't have it yet:
 
@@ -68,4 +68,4 @@ Your save lives in `.quest/progress.json` and your settings in `.quest/config.js
 
 ## For maintainers
 
-Every exercise is a folder with `test.json` (task, hints, tests), a starter file and `solution.py`. `python3 quest.py verify` proves every solution passes and every starter fails, and it runs in GitHub Actions on every push.
+Every exercise is a folder with `test.json` (task, hints and tests in English and Spanish), `starter.en.py`, `starter.es.py`, `solution.en.py` and `solution.es.py`. Lesson notes are `README.en.md` and `README.es.md`. `python3 quest.py verify` proves every solution passes and every starter fails, in both languages, and it runs in GitHub Actions on every push.

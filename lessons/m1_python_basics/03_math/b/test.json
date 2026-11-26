@@ -1,27 +1,54 @@
 {
   "id": "m1-03b",
-  "title": "Movie time",
-  "task": [
-    "A movie lasts 135 minutes.",
-    "Use // and % to print: 2 hours and 15 minutes"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "minutes // 60 gives the whole hours.",
-    "minutes % 60 gives the leftover minutes."
-  ],
-  "tests": [
-    {
-      "label": "Prints 2 hours and 15 minutes",
-      "exact": "2 hours and 15 minutes"
-    },
-    {
-      "label": "Uses // and %",
-      "source_contains": [
-        "//",
-        "%"
-      ],
-      "contains": []
-    }
-  ]
+  "en": {
+    "title": "Movie time",
+    "task": [
+      "A movie lasts 135 minutes.",
+      "Use // and % to print: 2 hours and 15 minutes"
+    ],
+    "hints": [
+      "minutes // 60 gives the whole hours.",
+      "minutes % 60 gives the leftover minutes."
+    ],
+    "tests": [
+      {
+        "label": "Prints 2 hours and 15 minutes",
+        "exact": "2 hours and 15 minutes"
+      },
+      {
+        "label": "Uses // and %",
+        "source_contains": [
+          "//",
+          "%"
+        ],
+        "contains": []
+      }
+    ]
+  },
+  "es": {
+    "title": "Hora de cine",
+    "task": [
+      "Una película dura 135 minutos.",
+      "Usa // y % para imprimir: 2 horas y 15 minutos"
+    ],
+    "hints": [
+      "minutos // 60 da las horas completas.",
+      "minutos % 60 da los minutos que sobran."
+    ],
+    "tests": [
+      {
+        "label": "Imprime 2 horas y 15 minutos",
+        "exact": "2 horas y 15 minutos"
+      },
+      {
+        "label": "Usa // y %",
+        "source_contains": [
+          "//",
+          "%"
+        ],
+        "contains": []
+      }
+    ]
+  }
 }

@@ -1,20 +1,40 @@
 {
   "id": "m1-01a",
-  "title": "Say hello",
-  "task": [
-    "Print exactly two lines:",
-    "Hola, mundo!",
-    "I am learning Python"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Use print() twice, once per line.",
-    "Text needs quotes: print(\"Hola, mundo!\")"
-  ],
-  "tests": [
-    {
-      "label": "Prints the two lines exactly",
-      "exact": "Hola, mundo!\nI am learning Python"
-    }
-  ]
+  "en": {
+    "title": "Say hello",
+    "task": [
+      "Print exactly two lines:",
+      "Hello, world!",
+      "I am learning Python"
+    ],
+    "hints": [
+      "Use print() twice, once per line.",
+      "Text needs quotes: print(\"Hello, world!\")"
+    ],
+    "tests": [
+      {
+        "label": "Prints the two lines exactly",
+        "exact": "Hello, world!\nI am learning Python"
+      }
+    ]
+  },
+  "es": {
+    "title": "Saluda",
+    "task": [
+      "Imprime exactamente dos líneas:",
+      "¡Hola, mundo!",
+      "Estoy aprendiendo Python"
+    ],
+    "hints": [
+      "Usa print() dos veces, una por línea.",
+      "El texto necesita comillas: print(\"¡Hola, mundo!\")"
+    ],
+    "tests": [
+      {
+        "label": "Imprime las dos líneas exactas",
+        "exact": "¡Hola, mundo!\nEstoy aprendiendo Python"
+      }
+    ]
+  }
 }

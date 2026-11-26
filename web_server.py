@@ -29,11 +29,13 @@ LOCK = threading.Lock()  # one game action at a time, so the save file stays cle
 
 def exercise_info(ex: dict, save: dict) -> dict:
     return {"id": ex["id"], "title": ex["title"], "module": ex["module"], "lesson": ex["lesson"],
-            "build": bool(ex.get("build")), "passed": ex["id"] in save["passed"]}
+            "lessonTitle": ex["lesson_title"], "build": bool(ex.get("build")), "passed": ex["id"] in save["passed"]}
 
 
 def state() -> dict:
-    exercises = quest.load_exercises()
+    cfg = quest.load_config()
+    lang = cfg["language"]
+    exercises = quest.load_exercises(lang)
     save = quest.load_save()
     lv = quest.level_for(save["xp"])
     nx = quest.next_level(lv)
@@ -41,16 +43,16 @@ def state() -> dict:
     today = quest.today()
     done_today = sum(1 for e in save["log"] if e.get("day") == today and e["what"].startswith(("Exercise", "Build")))
     return {
-        "config": quest.load_config(),
+        "config": cfg,
         "save": {k: save[k] for k in ("xp", "streak", "best_streak", "last_day", "log")},
         "level": {"n": lv[0], "name": lv[1], "from": lv[2], "to": nx[2] if nx else None, "next": nx[1] if nx else None},
-        "ranks": quest.RANKS,
+        "ranks": quest.RANKS_BY_LANG[lang],
         "doneToday": done_today,
         "exercises": [exercise_info(e, save) for e in exercises],
         "current": current["id"] if current else None,
         "claude": bool(shutil.which("claude")),
         "configured": quest.CONFIG_FILE.exists(),
-        "models": [{"id": m, "label": label} for m, label in quest.MODELS],
+        "models": [{"id": m, "label": en if lang == "en" else es} for m, en, es in quest.MODELS],
         "modules": json.loads((quest.LESSONS / "modules.json").read_text(encoding="utf-8")),
     }
 
@@ -61,8 +63,8 @@ def exercise_detail(ex_id: str) -> dict:
     ex = quest.find(exercises, ex_id, save)
     if not ex:
         raise KeyError(ex_id)
-    readme = ex["folder"].parent / "README.md"
-    code_file = ex["folder"] / ex.get("file", "exercise.py")
+    readme = quest.lesson_readme(ex["folder"].parent, ex["lang"])
+    code_file = quest.work_file(ex)
     return {
         **exercise_info(ex, save),
         "task": ex["task"],
@@ -80,8 +82,7 @@ def write_code(ex_id: str, code: str) -> dict:
     ex = quest.find(exercises, ex_id, quest.load_save())
     if not ex:
         raise KeyError(ex_id)
-    path = ex["folder"] / ex.get("file", "exercise.py")
-    path.write_text(code, encoding="utf-8")
+    quest.work_file(ex).write_text(code, encoding="utf-8")
     return ex
 
 
@@ -94,11 +95,11 @@ def captured(fn, *args) -> str:
 
 def do_run(body: dict) -> dict:
     ex = write_code(body["id"], body["code"])
-    path = ex["folder"] / ex.get("file", "exercise.py")
+    path = quest.work_file(ex)
     out, err, slow = quest.run_program(path, body.get("inputs", []))
     explain = ""
     if slow:
-        explain = "Your program ran too long. Is there a loop that never stops?"
+        explain = quest.t("too_long")
     elif "Traceback" in err or "Error" in err:
         explain = quest.explain_error(err)
     return {"stdout": out, "stderr": err, "timeout": slow, "explain": explain}
@@ -123,7 +124,9 @@ def do_config(body: dict) -> dict:
     for key in quest.DEFAULT_CONFIG:
         if key in body:
             value = body[key]
-            if key == "claude_model" and value not in [m for m, _ in quest.MODELS]:
+            if key == "claude_model" and value not in [m for m, *_ in quest.MODELS]:
+                continue
+            if key == "language" and value not in quest.LANGS:
                 continue
             cfg[key] = int(value) if isinstance(quest.DEFAULT_CONFIG[key], int) else str(value)[:60]
     quest.write_config(cfg)
@@ -133,11 +136,12 @@ def do_config(body: dict) -> dict:
 TUTOR_RULES = """You are Pip, a cheerful pixel-art snake who tutors {name} in Python Quest, a game for learning Python from total beginner to professional.
 
 How to teach:
-- Reply in {language}. If the learner writes in another language, switch to it.
+- Always reply in {language}, even if the learner mixes languages. The whole game is set to {language}: lessons, tests and buttons.
+- Code examples use {language} for text and variable names, like the lessons do.
 - Keep replies short: 2 to 6 sentences, plus at most one small code example in a ```python block.
 - One idea at a time. Use everyday examples (Colombian life works well: pesos, tinto, buses, arepas).
 - Use Predict-Run-Investigate-Modify-Make: ask them to predict what code prints, run it, then change one thing.
-- Hints before answers, from small to bigger. Never write the full solution of the current exercise. If they insist, tell them about `python quest.py solution` and that it costs the XP.
+- Hints before answers, from small to bigger. Never write the full solution of the current exercise. If they insist, tell them about `python3 quest.py solution` and that it costs the XP.
 - Explain errors simply: what the error name means, which line, the smallest fix. Let them fix it.
 - Praise effort and strategy, not talent.
 - The page has a Run button and a Check button (automatic tests). Point them there.
@@ -156,18 +160,39 @@ Their current code ({file}):
 {last_error}"""
 
 
+TUTOR_ERRORS = {
+    "en": {
+        "missing": "I can't find Claude Code on this computer. Install it with:\n\n"
+                   "    npm install -g @anthropic-ai/claude-code\n\n"
+                   "then run `claude` once in the terminal and sign in with your Claude account. "
+                   "After that, restart `python3 quest.py web`.",
+        "slow": "Pip took too long to answer. Try a shorter question.",
+        "failed": "Claude Code didn't answer. If you haven't signed in yet, run `claude` in a terminal "
+                  "and log in with your Claude account.\n\nDetails: ",
+    },
+    "es": {
+        "missing": "No encuentro Claude Code en este computador. Instálalo con:\n\n"
+                   "    npm install -g @anthropic-ai/claude-code\n\n"
+                   "luego corre `claude` una vez en la terminal e inicia sesión con tu cuenta de Claude. "
+                   "Después reinicia `python3 quest.py web`.",
+        "slow": "Pip se demoró mucho en responder. Intenta una pregunta más corta.",
+        "failed": "Claude Code no respondió. Si todavía no has iniciado sesión, corre `claude` en una terminal "
+                  "y entra con tu cuenta de Claude.\n\nDetalles: ",
+    },
+}
+
+
 def do_tutor(body: dict) -> dict:
+    cfg = quest.load_config()
+    lang = cfg["language"]
+    errors = TUTOR_ERRORS[lang]
     claude = shutil.which("claude")
     if not claude:
-        return {"text": "I can't find Claude Code on this computer. Install it with:\n\n"
-                        "    npm install -g @anthropic-ai/claude-code\n\n"
-                        "then run `claude` once in the terminal and sign in with your Claude account. "
-                        "After that, restart `python quest.py web`.", "ok": False}
-    cfg = quest.load_config()
+        return {"text": errors["missing"], "ok": False}
     detail = exercise_detail(body["id"])
     rules = TUTOR_RULES.format(
-        name=cfg["name"], language="Spanish (Colombian, friendly)" if cfg["language"] == "es" else "simple English",
-        ex_id=detail["id"], title=detail["title"], lesson=detail["lesson"], task=" ".join(detail["task"]),
+        name=cfg["name"], language="Spanish (Colombian, friendly, use tú)" if lang == "es" else "simple English",
+        ex_id=detail["id"], title=detail["title"], lesson=detail["lessonTitle"], task=" ".join(detail["task"]),
         notes=detail["lessonNotes"][:3000], file=detail["file"], code=body.get("code", detail["code"])[:6000],
         last_error=("Their last run failed with:\n" + body["lastError"][:1500]) if body.get("lastError") else "",
     )
@@ -181,7 +206,7 @@ def do_tutor(body: dict) -> dict:
         proc = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=180,
                               cwd=quest.ROOT, encoding="utf-8")
     except subprocess.TimeoutExpired:
-        return {"text": "Pip took too long to answer. Try a shorter question.", "ok": False}
+        return {"text": errors["slow"], "ok": False}
     try:
         data = json.loads(proc.stdout)
         if data.get("is_error"):
@@ -189,8 +214,7 @@ def do_tutor(body: dict) -> dict:
         return {"text": data.get("result", "").strip(), "ok": True}
     except (ValueError, json.JSONDecodeError):
         msg = (proc.stderr or proc.stdout or "").strip()[-600:]
-        return {"text": "Claude Code didn't answer. If you haven't signed in yet, run `claude` in a terminal "
-                        "and log in with your Claude account.\n\nDetails: " + msg, "ok": False}
+        return {"text": errors["failed"] + msg, "ok": False}
 
 
 ROUTES_POST = {"/api/run": do_run, "/api/check": do_check, "/api/hint": do_hint,

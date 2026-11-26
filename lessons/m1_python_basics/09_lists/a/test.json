@@ -1,29 +1,58 @@
 {
   "id": "m1-09a",
-  "title": "Market bag",
-  "task": [
-    "Start with bag = [\"mango\", \"lulo\", \"banano\"]",
-    "Add \"guava\" with .append()",
-    "Print each fruit on its own line, then print the count."
-  ],
   "file": "exercise.py",
-  "hints": [
-    "bag.append(\"guava\")",
-    "for fruit in bag: then print(fruit)",
-    "print(len(bag)) goes after the loop."
-  ],
-  "tests": [
-    {
-      "label": "Prints 4 fruits then 4",
-      "exact": "mango\nlulo\nbanano\nguava\n4"
-    },
-    {
-      "label": "Uses .append() and len()",
-      "source_contains": [
-        ".append(",
-        "len("
-      ],
-      "contains": []
-    }
-  ]
+  "en": {
+    "title": "Market bag",
+    "task": [
+      "Start with bag = [\"mango\", \"lulo\", \"banana\"]",
+      "Add \"guava\" with .append()",
+      "Print each fruit on its own line, then print the count."
+    ],
+    "hints": [
+      "bag.append(\"guava\")",
+      "for fruit in bag: then print(fruit)",
+      "print(len(bag)) goes after the loop."
+    ],
+    "tests": [
+      {
+        "label": "Prints 4 fruits then 4",
+        "exact": "mango\nlulo\nbanana\nguava\n4"
+      },
+      {
+        "label": "Uses .append() and len()",
+        "source_contains": [
+          ".append(",
+          "len("
+        ],
+        "contains": []
+      }
+    ]
+  },
+  "es": {
+    "title": "Bolsa del mercado",
+    "task": [
+      "Empieza con bolsa = [\"mango\", \"lulo\", \"banano\"]",
+      "Agrega \"guayaba\" con .append()",
+      "Imprime cada fruta en su propia línea y luego la cantidad."
+    ],
+    "hints": [
+      "bolsa.append(\"guayaba\")",
+      "for fruta in bolsa: y luego print(fruta)",
+      "print(len(bolsa)) va después del ciclo."
+    ],
+    "tests": [
+      {
+        "label": "Imprime 4 frutas y luego 4",
+        "exact": "mango\nlulo\nbanano\nguayaba\n4"
+      },
+      {
+        "label": "Usa .append() y len()",
+        "source_contains": [
+          ".append(",
+          "len("
+        ],
+        "contains": []
+      }
+    ]
+  }
 }

@@ -1,2 +1,2 @@
-print("Hola, mundo!")
+print("Hello, world!")
 print("I am learning Python")

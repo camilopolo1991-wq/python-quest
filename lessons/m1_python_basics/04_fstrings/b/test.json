@@ -1,18 +1,36 @@
 {
   "id": "m1-04b",
-  "title": "Pretty money",
-  "task": [
-    "total is 1234567.891",
-    "Print: Total: $1,234,567.89 (comma separator and 2 decimals)"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Inside the braces, after a colon, you can add a format: {total:,.2f}"
-  ],
-  "tests": [
-    {
-      "label": "Prints Total: $1,234,567.89",
-      "exact": "Total: $1,234,567.89"
-    }
-  ]
+  "en": {
+    "title": "Pretty money",
+    "task": [
+      "total is 1234567.891",
+      "Print: Total: $1,234,567.89 (comma separator and 2 decimals)"
+    ],
+    "hints": [
+      "Inside the braces, after a colon, you can add a format: {total:,.2f}"
+    ],
+    "tests": [
+      {
+        "label": "Prints Total: $1,234,567.89",
+        "exact": "Total: $1,234,567.89"
+      }
+    ]
+  },
+  "es": {
+    "title": "Plata bonita",
+    "task": [
+      "total es 1234567.891",
+      "Imprime: Total: $1,234,567.89 (separador de miles y 2 decimales)"
+    ],
+    "hints": [
+      "Dentro de las llaves, después de dos puntos, va el formato: {total:,.2f}"
+    ],
+    "tests": [
+      {
+        "label": "Imprime Total: $1,234,567.89",
+        "exact": "Total: $1,234,567.89"
+      }
+    ]
+  }
 }

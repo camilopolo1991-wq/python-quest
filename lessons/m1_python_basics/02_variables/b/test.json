@@ -1,26 +1,52 @@
 {
   "id": "m1-02b",
-  "title": "Score up",
-  "task": [
-    "score starts at 10.",
-    "Add 5 to score by changing the variable (score = score + 5).",
-    "Print score. It should show 15."
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Write score = score + 5 before the print."
-  ],
-  "tests": [
-    {
-      "label": "Prints 15",
-      "exact": "15"
-    },
-    {
-      "label": "Changes the variable",
-      "source_contains": [
-        "score = score + 5"
-      ],
-      "contains": []
-    }
-  ]
+  "en": {
+    "title": "Score up",
+    "task": [
+      "score starts at 10.",
+      "Add 5 to score by changing the variable (score = score + 5).",
+      "Print score. It should show 15."
+    ],
+    "hints": [
+      "Write score = score + 5 before the print."
+    ],
+    "tests": [
+      {
+        "label": "Prints 15",
+        "exact": "15"
+      },
+      {
+        "label": "Changes the variable",
+        "source_contains": [
+          "score = score + 5"
+        ],
+        "contains": []
+      }
+    ]
+  },
+  "es": {
+    "title": "Sube el puntaje",
+    "task": [
+      "puntaje empieza en 10.",
+      "Súmale 5 cambiando la variable (puntaje = puntaje + 5).",
+      "Imprime puntaje. Debe mostrar 15."
+    ],
+    "hints": [
+      "Escribe puntaje = puntaje + 5 antes del print."
+    ],
+    "tests": [
+      {
+        "label": "Imprime 15",
+        "exact": "15"
+      },
+      {
+        "label": "Cambia la variable",
+        "source_contains": [
+          "puntaje = puntaje + 5"
+        ],
+        "contains": []
+      }
+    ]
+  }
 }

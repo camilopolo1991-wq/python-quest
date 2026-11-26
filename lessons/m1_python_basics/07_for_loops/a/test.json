@@ -1,26 +1,52 @@
 {
   "id": "m1-07a",
-  "title": "Rocket countdown",
-  "task": [
-    "Count down from 5 to 1, one number per line.",
-    "Then print Despegue!"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Inside the loop: print(n)",
-    "Despegue! goes after the loop, with no spaces in front."
-  ],
-  "tests": [
-    {
-      "label": "5 4 3 2 1 Despegue!",
-      "exact": "5\n4\n3\n2\n1\nDespegue!"
-    },
-    {
-      "label": "Uses a for loop",
-      "source_contains": [
-        "for "
-      ],
-      "contains": []
-    }
-  ]
+  "en": {
+    "title": "Rocket countdown",
+    "task": [
+      "Count down from 5 to 1, one number per line.",
+      "Then print Liftoff!"
+    ],
+    "hints": [
+      "Inside the loop: print(n)",
+      "Liftoff! goes after the loop, with no spaces in front."
+    ],
+    "tests": [
+      {
+        "label": "5 4 3 2 1 Liftoff!",
+        "exact": "5\n4\n3\n2\n1\nLiftoff!"
+      },
+      {
+        "label": "Uses a for loop",
+        "source_contains": [
+          "for "
+        ],
+        "contains": []
+      }
+    ]
+  },
+  "es": {
+    "title": "Cuenta regresiva",
+    "task": [
+      "Cuenta de 5 a 1, un número por línea.",
+      "Luego imprime ¡Despegue!"
+    ],
+    "hints": [
+      "Dentro del ciclo: print(n)",
+      "¡Despegue! va después del ciclo, sin espacios al inicio."
+    ],
+    "tests": [
+      {
+        "label": "5 4 3 2 1 ¡Despegue!",
+        "exact": "5\n4\n3\n2\n1\n¡Despegue!"
+      },
+      {
+        "label": "Usa un ciclo for",
+        "source_contains": [
+          "for "
+        ],
+        "contains": []
+      }
+    ]
+  }
 }

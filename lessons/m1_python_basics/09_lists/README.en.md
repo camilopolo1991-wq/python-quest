@@ -3,7 +3,7 @@
 A list keeps many values in order.
 
 ```python
-fruits = ["mango", "lulo", "banano"]
+fruits = ["mango", "lulo", "banana"]
 print(fruits[0])        # mango (lists count from 0)
 fruits.append("guava")  # add to the end
 print(len(fruits))      # 4

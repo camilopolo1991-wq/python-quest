@@ -6,8 +6,9 @@
 <title>Python Quest</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Look: a 16-bit fantasy RPG. The whole game fits one screen: HUD on top, the stage below.
-   World = an island map of 12 themed lands. Lesson = parchment notes | code | Pip's dialog box. */
+/* Look: a 16-bit adventure. The whole game fits one screen: HUD on top, the stage below.
+   World = a side-on world map: one stop per lesson on a winding road, the Build castle at the end.
+   Lesson = parchment notes | code | Pip's dialog box. */
 :root {
   --sky: #9bd4ff; --parch: #f3e4bf; --parch-2: #e6d09c; --ink: #3a2717; --wood: #8a5a2b; --wood-dark: #4f3015;
   --gold: #ffcc33; --ruby: #d8473a; --leaf: #3f9a4b; --night: #1c1630; --night-ink: #f6eedb;
@@ -56,6 +57,8 @@ h2 { font-size: 12px; color: var(--wood-dark); }
 .swatches { display: flex; gap: 10px; }
 .sw { width: 32px; height: 32px; border: 4px solid var(--wood-dark); cursor: pointer; }
 .sw[aria-pressed="true"] { outline: 4px solid var(--ruby); outline-offset: 2px; }
+.langs { display: flex; gap: 8px; }
+.langs button[aria-pressed="true"] { background: var(--gold); }
 .typing::after { content: "▌"; animation: blink 1s steps(2) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
@@ -78,33 +81,51 @@ h2 { font-size: 12px; color: var(--wood-dark); }
 
 /* ===== World ===== */
 #screenWorld { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 16px; }
-.mapframe { display: grid; place-items: center; padding: 10px; position: relative; overflow: hidden; }
+.mapframe { display: flex; flex-direction: column; gap: 10px; padding: 12px; overflow: hidden; }
+.worlds { display: flex; gap: 6px; flex: none; align-items: center; }
+.worlds .arrow { flex: none; padding: 6px 9px; }
+.wtabs { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; flex: 1; }
+.wtab { cursor: pointer; font-family: var(--font-display); font-size: 8px; padding: 6px 0; border: 3px solid var(--wood-dark); background: var(--parch-2); color: var(--wood-dark); display: grid; place-items: center; gap: 3px; }
+.wtab canvas { width: 18px; height: 18px; image-rendering: pixelated; }
+.wtab.done { background: #a8e08c; }
+.wtab.locked { background: #cfc8d8; color: #5d5672; }
+.wtab.sel { background: var(--gold); box-shadow: inset 0 -4px 0 #d9a21a; }
+.maparea { flex: 1; min-height: 0; display: grid; place-items: center; }
 .mapwrap { position: relative; }
 #mapCanvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; border: 3px solid var(--wood-dark); }
-.cloud { position: absolute; width: 64px; height: 20px; background: #ffffffd0; box-shadow: 16px -8px 0 #ffffffd0, 32px 0 0 #ffffffd0; pointer-events: none; animation: drift 60s linear infinite; }
-@keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(110vw); } }
-.node { position: absolute; transform: translate(-50%, -50%); width: 28px; height: 28px; border: 4px solid var(--wood-dark); background: #fff3c4; cursor: pointer; font-family: var(--font-display); font-size: 8px; color: var(--wood-dark); display: grid; place-items: center; padding: 0; z-index: 2; }
-.node.done { background: #6cc35a; }
-.node.locked { background: #b9b4c9; color: #4a4560; }
-.node.here { background: var(--gold); }
-.node.sel { outline: 4px solid var(--ruby); outline-offset: 2px; }
-.node .tag { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 7px; background: var(--parch); border: 2px solid var(--wood-dark); padding: 3px 5px; opacity: 0; pointer-events: none; }
-.node:hover .tag, .node.sel .tag, .node:focus-visible .tag { opacity: 1; }
-#heroToken { position: absolute; width: 32px; height: 36px; image-rendering: pixelated; transform: translate(-50%, -100%); pointer-events: none; z-index: 3; animation: bob 1s steps(2) infinite; }
+.wtitle { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); font-family: var(--font-display); font-size: clamp(9px, 1.2vw, 14px); color: #fff; text-shadow: 3px 3px 0 #0008; white-space: nowrap; pointer-events: none; z-index: 4; }
+.stop { position: absolute; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 4px solid #1c2a4a; border-radius: 4px; background: linear-gradient(90deg, #3d7bd9 0 30%, #eaf6ff 30%); cursor: pointer; padding: 0; z-index: 2; display: grid; place-items: center; box-shadow: inset 0 0 0 2px #fff, 0 4px 0 #0007; }
+.stop canvas { width: 20px; height: 20px; image-rendering: pixelated; margin-left: 8px; }
+.stop.done { background: linear-gradient(90deg, #2f8a3a 0 30%, #b9f0a8 30%); }
+.stop.here { background: linear-gradient(90deg, #d99a1a 0 30%, #fff3b0 30%); animation: pulse 1.2s steps(2) infinite; }
+.stop.locked { background: linear-gradient(90deg, #77738a 0 30%, #d6d2e0 30%); cursor: default; }
+.stop.locked canvas { opacity: .6; }
+.stop.boss { width: 48px; height: 48px; background: linear-gradient(90deg, #c8453a 0 30%, #ffe0dc 30%); }
+.stop.boss.done { background: linear-gradient(90deg, #2f8a3a 0 30%, #b9f0a8 30%); }
+.stop.boss.locked { background: linear-gradient(90deg, #77738a 0 30%, #d6d2e0 30%); }
+@keyframes pulse { 50% { box-shadow: inset 0 0 0 2px #fff, 0 0 0 5px #fff9, 0 4px 0 #0007; } }
+.stop .num { position: absolute; left: 2px; top: 50%; transform: translateY(-50%); font-family: var(--font-display); font-size: 9px; color: #fff; text-shadow: 1px 1px 0 #1c2a4a; }
+.stop .cap { position: absolute; top: calc(100% + 5px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-family: var(--font-body); font-weight: 600; font-size: clamp(11px, 0.95vw, 14px); color: #1c2a4a; background: #fffffff0; border: 2px solid #1c2a4a; padding: 0 5px; pointer-events: none; z-index: 3; }
+.stop.locked .cap { color: #4a4560; background: #e6e2ee; }
+.stop .flagdone { position: absolute; top: -16px; right: -10px; font-size: 14px; }
+.you { position: absolute; transform: translate(-50%, -100%); font-family: var(--font-display); font-size: 9px; color: #fff; text-shadow: 2px 2px 0 #1c2a4a; z-index: 4; pointer-events: none; text-align: center; animation: bob 1s steps(2) infinite; }
+#heroToken { position: absolute; width: 34px; height: 38px; image-rendering: pixelated; transform: translate(-50%, -100%); pointer-events: none; z-index: 3; animation: bob 1s steps(2) infinite; }
 @keyframes bob { 50% { margin-top: -4px; } }
 .region { display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
 .region h3 { font-size: 13px; color: var(--wood-dark); }
 .region .sub { color: var(--wood); }
 .region-list { list-style: none; margin: 0; padding: 0 4px 0 0; display: grid; gap: 5px; overflow: auto; flex: 1; min-height: 0; align-content: start; }
-.lesson-head { font-family: var(--font-display); font-size: 8px; color: var(--wood); margin-top: 6px; }
+.lesson-head { font-family: var(--font-display); font-size: 8px; color: var(--wood); margin-top: 6px; display: flex; gap: 6px; align-items: center; }
+.lesson-head canvas { width: 14px; height: 14px; image-rendering: pixelated; }
 .lesson-btn { width: 100%; display: flex; gap: 10px; align-items: center; text-align: left; cursor: pointer; background: var(--parch-2); border: 3px solid var(--wood-dark); padding: 4px 9px; font-size: 15px; }
 .lesson-btn:hover { background: #fff3c4; }
 .dot { width: 12px; height: 12px; border: 3px solid var(--wood-dark); background: #fff; flex: none; }
 .lesson-btn.done .dot { background: var(--leaf); }
 .lesson-btn.boss .dot { background: var(--ruby); }
 .lesson-btn.boss.done .dot { background: var(--leaf); }
-.topics { display: flex; flex-wrap: wrap; gap: 5px; }
-.topics span { background: var(--parch-2); border: 2px solid var(--wood); padding: 1px 7px; font-size: 13px; }
+.topic-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; overflow: auto; flex: 1; min-height: 0; align-content: start; }
+.topic-list li { display: flex; gap: 8px; align-items: center; background: var(--parch-2); border: 2px solid var(--wood); padding: 3px 8px; font-size: 15px; }
+.topic-list canvas { width: 16px; height: 16px; image-rendering: pixelated; flex: none; }
 .coming { background: var(--parch-2); border: 3px dashed var(--wood); padding: 10px; font-size: 15px; }
 
 /* ===== Lesson ===== */
@@ -136,8 +157,8 @@ h2 { font-size: 12px; color: var(--wood-dark); }
 .say { white-space: pre-wrap; flex: none; }
 .say p { margin: 3px 0; }
 .say.me { color: #9fd0ff; }
-.say.me::before { content: "YOU ▸ "; font-family: var(--font-display); font-size: 8px; }
-.say.pip::before { content: "PIP ▸ "; font-family: var(--font-display); font-size: 8px; color: var(--gold); }
+.say::before { content: attr(data-who) " ▸ "; font-family: var(--font-display); font-size: 8px; }
+.say.pip::before { color: var(--gold); }
 .say pre { background: #0f0b1f; padding: 6px 8px; overflow-x: auto; font-family: var(--font-code); font-size: 13px; white-space: pre; }
 .say code { font-family: var(--font-code); }
 .quick { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -147,11 +168,11 @@ h2 { font-size: 12px; color: var(--wood-dark); }
 .ask-row textarea { flex: 1; min-width: 0; height: 48px; resize: none; background: #0f0b1f; color: var(--night-ink); border: 3px solid #fff; padding: 6px 8px; }
 
 @media (max-width: 1100px) { #screenLesson { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); } .pip-col { grid-column: 1 / -1; min-height: 260px; } }
-@media (max-width: 900px) { #screenWorld, #screenLesson { grid-template-columns: minmax(0, 1fr); } .col, .region { overflow: visible; } .notes, .region-list { max-height: 50vh; } .editor { min-height: 260px; } }
+@media (max-width: 900px) { #screenWorld, #screenLesson { grid-template-columns: minmax(0, 1fr); } .col, .region { overflow: visible; } .notes, .region-list, .topic-list { max-height: 50vh; } .editor { min-height: 260px; } .wtab canvas { display: none; } .stop .cap { display: none; } }
 
 .float { position: fixed; left: 50%; top: 28%; transform: translateX(-50%); font-family: var(--font-display); font-size: 20px; color: var(--gold); text-shadow: 3px 3px 0 var(--wood-dark); pointer-events: none; animation: rise 1.7s steps(16) forwards; z-index: 20; white-space: nowrap; }
 @keyframes rise { to { transform: translate(-50%, -90px); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .float, #heroToken, .typing::after, .cloud { animation: none; } .fill { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .float, #heroToken, .typing::after, .stop.here { animation: none; } .fill { transition: none; } }
 dialog { border: 0; padding: 0; background: transparent; max-width: 460px; width: 94vw; }
 dialog::backdrop { background: #1c163099; }
 dialog form { display: grid; gap: 10px; }
@@ -162,17 +183,19 @@ dialog form { display: grid; gap: 10px; }
 <!-- ============ TITLE / NAME SCREEN ============ -->
 <section id="screenStart" class="screen" hidden>
   <div class="title-card">
-    <h1>PYTHON QUEST<span>from beginner to Python Master</span></h1>
+    <h1>PYTHON QUEST<span data-t="tagline"></span></h1>
     <canvas id="startHero" width="16" height="18" aria-hidden="true"></canvas>
     <div class="dialog" style="text-align:left"><p id="introText" class="typing" style="margin:0"></p></div>
     <form id="nameForm" class="frame">
-      <label class="label" for="heroName">YOUR NAME</label>
+      <div class="langs" id="startLangs" role="group" aria-label="Language / Idioma">
+        <button type="button" class="btn plain" data-lang="es">ESPANOL</button>
+        <button type="button" class="btn plain" data-lang="en">ENGLISH</button>
+      </div>
+      <label class="label" for="heroName" data-t="yourName"></label>
       <div class="name-row"><input id="heroName" maxlength="20" autocomplete="off" required placeholder="Camilo"></div>
-      <div class="label">PICK YOUR COLOR</div>
+      <div class="label" data-t="pickColor"></div>
       <div class="swatches" id="swatches"></div>
-      <div class="field" style="width:min(260px,100%)"><label for="startLang">Pip speaks</label>
-        <select id="startLang"><option value="es">Español</option><option value="en">English</option></select></div>
-      <button class="btn" type="submit">▶ START ADVENTURE</button>
+      <button class="btn" type="submit" data-t="start"></button>
     </form>
   </div>
 </section>
@@ -181,29 +204,36 @@ dialog form { display: grid; gap: 10px; }
 <header class="hud dialog" id="hud" hidden>
   <div class="hud-left">
     <canvas id="hudHero" width="16" height="18" aria-hidden="true"></canvas>
-    <div><div class="hud-name" id="hudName">HERO</div><div class="hud-rank" id="hudRank">Lv 1 · Curious 1</div></div>
+    <div><div class="hud-name" id="hudName">HERO</div><div class="hud-rank" id="hudRank"></div></div>
   </div>
   <div class="meters">
     <div class="meter"><b>XP</b><div class="track"><div class="fill xp" id="xpFill"></div></div><span id="xpText">0</span></div>
-    <div class="meter"><b>DAY</b><div class="track"><div class="fill goal" id="goalFill"></div></div><span id="goalText">0/3</span></div>
+    <div class="meter"><b data-t="day"></b><div class="track"><div class="fill goal" id="goalFill"></div></div><span id="goalText">0/3</span></div>
   </div>
   <div class="hud-right">
-    <span class="flame" id="streak">🔥 0 DAYS</span>
+    <span class="flame" id="streak"></span>
     <span class="model-tag" id="modelTag"></span>
-    <button class="btn plain" id="mapBtn">MAP</button>
-    <button class="btn plain" id="settingsBtn" aria-label="Settings">⚙</button>
+    <button class="btn plain" id="mapBtn" data-t="map"></button>
+    <button class="btn plain" id="settingsBtn" data-t-label="settings">⚙</button>
   </div>
 </header>
 
 <!-- ============ WORLD MAP ============ -->
 <section id="screenWorld" class="screen" hidden>
   <div class="frame mapframe" id="mapFrame">
-    <div class="mapwrap" id="mapWrap">
-      <canvas id="mapCanvas" width="320" height="200" aria-hidden="true"></canvas>
-      <div class="cloud" style="top:12%;animation-delay:-10s"></div>
-      <div class="cloud" style="top:48%;animation-delay:-38s;animation-duration:80s"></div>
-      <canvas id="heroToken" width="16" height="18" aria-hidden="true"></canvas>
-      <div id="nodes"></div>
+    <nav class="worlds" data-t-label="worlds">
+      <button class="btn plain arrow" id="prevWorld" data-t-label="prevWorld">◂</button>
+      <div class="wtabs" id="wtabs"></div>
+      <button class="btn plain arrow" id="nextWorld" data-t-label="nextWorld">▸</button>
+    </nav>
+    <div class="maparea" id="mapArea">
+      <div class="mapwrap" id="mapWrap">
+        <canvas id="mapCanvas" width="320" height="180" aria-hidden="true"></canvas>
+        <div class="wtitle" id="wtitle"></div>
+        <canvas id="heroToken" width="16" height="18" aria-hidden="true"></canvas>
+        <div class="you" id="youTag" aria-hidden="true"></div>
+        <div id="stops"></div>
+      </div>
     </div>
   </div>
   <aside class="frame region" id="region" aria-live="polite"></aside>
@@ -212,47 +242,47 @@ dialog form { display: grid; gap: 10px; }
 <!-- ============ LESSON ============ -->
 <section id="screenLesson" class="screen" hidden>
   <div class="frame col">
-    <button class="back" id="backBtn">◂ BACK TO MAP</button>
-    <div class="label" id="crumb">MEADOW OF BEGINNINGS</div>
+    <button class="back" id="backBtn" data-t="back"></button>
+    <div class="label" id="crumb"></div>
     <h2 id="exTitle">…</h2>
     <div class="notes" id="notes"></div>
   </div>
   <div class="frame col">
     <ul class="quest-scroll" id="task"></ul>
     <div class="editor">
-      <div class="bar"><span id="fileName">exercise.py</span><span>Tab = 4 spaces · Ctrl+Enter = Run</span></div>
-      <textarea id="code" spellcheck="false" aria-label="Your code"></textarea>
+      <div class="bar"><span id="fileName">exercise.py</span><span data-t="editorTip"></span></div>
+      <textarea id="code" spellcheck="false" data-t-label="yourCode"></textarea>
     </div>
-    <div class="field" id="inputsWrap"><label for="inputs">Answers for input(), separated by commas</label><input id="inputs" autocomplete="off" placeholder="example: Camilo, 22"></div>
+    <div class="field" id="inputsWrap"><label for="inputs" data-t="inputsLabel"></label><input id="inputs" autocomplete="off" data-t-ph="inputsPh"></div>
     <div class="btns">
-      <button class="btn green" id="runBtn">▶ RUN</button>
-      <button class="btn" id="checkBtn">⚔ CHECK</button>
-      <button class="btn blue" id="hintBtn">? HINT</button>
+      <button class="btn green" id="runBtn" data-t="run"></button>
+      <button class="btn" id="checkBtn" data-t="check"></button>
+      <button class="btn blue" id="hintBtn" data-t="hint"></button>
     </div>
     <div class="dialog console" id="console"></div>
   </div>
   <div class="dialog pip-col">
-    <div class="pip-head"><canvas id="pipFace" width="12" height="12" aria-hidden="true"></canvas><div><b>PIP</b><small id="pipModel">your tutor</small></div></div>
+    <div class="pip-head"><canvas id="pipFace" width="12" height="12" aria-hidden="true"></canvas><div><b>PIP</b><small id="pipModel"></small></div></div>
     <div class="chat" id="chat" aria-live="polite"></div>
     <div class="quick">
-      <button class="q" data-q="Explain this lesson simply, with one tiny example. Ask me to predict the output.">Explain the lesson</button>
-      <button class="q" data-q="Why does my code fail? Give me a small hint, not the answer.">Why does it fail?</button>
-      <button class="q" data-q="Quiz me with one quick question about this lesson.">Quiz me</button>
+      <button class="q" data-q="qExplain" data-t="qExplainBtn"></button>
+      <button class="q" data-q="qFail" data-t="qFailBtn"></button>
+      <button class="q" data-q="qQuiz" data-t="qQuizBtn"></button>
     </div>
-    <div class="ask-row"><textarea id="ask" placeholder="Ask Pip…" aria-label="Message Pip"></textarea><button class="btn" id="sendBtn">SEND</button></div>
+    <div class="ask-row"><textarea id="ask" data-t-ph="askPh" data-t-label="askLabel"></textarea><button class="btn" id="sendBtn" data-t="send"></button></div>
   </div>
 </section>
 
 <dialog id="settings">
   <form method="dialog" class="frame" id="settingsForm">
-    <h2>SETTINGS</h2>
-    <div class="field"><label for="sName">Name</label><input id="sName" maxlength="20"></div>
-    <div class="field"><label for="sLang">Pip speaks</label><select id="sLang"><option value="es">Español</option><option value="en">English</option></select></div>
-    <div class="field"><label for="sColor">Hero color</label><select id="sColor"><option>blue</option><option>red</option><option>green</option><option>purple</option><option>gold</option></select></div>
-    <div class="field"><label for="sGoal">Exercises per day goal</label><input id="sGoal" inputmode="numeric"></div>
-    <div class="field"><label for="sModel">Pip's brain (Claude model)</label><select id="sModel"></select></div>
+    <h2 data-t="settingsTitle"></h2>
+    <div class="field"><label for="sName" data-t="name"></label><input id="sName" maxlength="20"></div>
+    <div class="field"><label for="sLang" data-t="language"></label><select id="sLang"><option value="es">Español</option><option value="en">English</option></select></div>
+    <div class="field"><label for="sColor" data-t="heroColor"></label><select id="sColor"></select></div>
+    <div class="field"><label for="sGoal" data-t="dailyGoal"></label><input id="sGoal" inputmode="numeric"></div>
+    <div class="field"><label for="sModel" data-t="pipBrain"></label><select id="sModel"></select></div>
     <p id="claudeHelp" style="font-size:14px;margin:0"></p>
-    <div class="btns"><button class="btn" value="save">SAVE</button><button class="btn plain" value="cancel">CANCEL</button></div>
+    <div class="btns"><button class="btn" value="save" data-t="save"></button><button class="btn plain" value="cancel" data-t="cancel"></button></div>
   </form>
 </dialog>
 
@@ -263,6 +293,70 @@ const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.classN
 async function api(path, body) {
   const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
   return r.json();
+}
+
+/* ================= Every word on screen, in both languages ================= */
+const I18N = {
+  en: {
+    tagline: "from beginner to Python Master", yourName: "YOUR NAME", pickColor: "PICK YOUR COLOR", start: "▶ START ADVENTURE",
+    intro: "PIP: Hello, traveler! I'm Pip, a Python snake. Twelve worlds lie between you and the title of Python Master. Before we begin… what is your name?",
+    welcome: (n) => `WELCOME, ${n}!`, day: "DAY", map: "MAP", settings: "Settings", lv: "Lv",
+    days: (n) => `🔥 ${n} DAY${n === 1 ? "" : "S"}`, pipOffline: "Pip offline", pipThinks: (m) => `thinking with ${m}`, noClaude: "Claude Code not found",
+    worlds: "Worlds", prevWorld: "Previous world", nextWorld: "Next world", world: (n) => `WORLD ${n}`, worldOf: (n) => `WORLD ${n} OF 12`,
+    locked: (b) => `🔒 Locked for now. Its castle holds the Build project: ${b}. This world gets its lessons in a future update.`,
+    willLearn: "WHAT YOU'LL LEARN", castle: "CASTLE", boss: "BOSS", enter: "▶ ENTER WORLD", cont: "▶ CONTINUE", replay: "▶ PLAY AGAIN",
+    stopLabel: (w, i, t, s) => `Level ${w}-${i}: ${t} (${s})`, sDone: "cleared", sHere: "you are here", sOpen: "open", sLocked: "locked",
+    back: "◂ BACK TO MAP", editorTip: "Tab = 4 spaces · Ctrl+Enter = Run", yourCode: "Your code",
+    inputsLabel: "Answers for input(), separated by commas", inputsPh: "example: Camilo, 22",
+    run: "▶ RUN", check: "⚔ CHECK", hint: "? HINT", send: "SEND", askPh: "Ask Pip…", askLabel: "Message Pip", you: "YOU",
+    consoleStart: "Write your code, press ▶ RUN to try it, then ⚔ CHECK to face the tests.", running: "Running…", facing: "Facing the tests…",
+    tooLong: "\nYour program ran too long. Is there a loop that never stops?", nothing: "(It ran but printed nothing.)",
+    levelUp: (r) => `LEVEL UP! ${r}`,
+    pipHello: (n) => `Let's go, ${n}! Read the lesson on the left, then write your code. If you get stuck, ask me.`,
+    qExplainBtn: "Explain the lesson", qFailBtn: "Why does it fail?", qQuizBtn: "Quiz me",
+    qExplain: "Explain this lesson simply, with one tiny example. Ask me to predict the output.",
+    qFail: "Why does my code fail? Give me a small hint, not the answer.", qQuiz: "Quiz me with one quick question about this lesson.",
+    settingsTitle: "SETTINGS", name: "Name", language: "Language (game, lessons, tests and Pip)", heroColor: "Hero color", dailyGoal: "Exercises per day goal",
+    pipBrain: "Pip's brain (Claude model)", save: "SAVE", cancel: "CANCEL",
+    claudeOk: "✓ Claude Code found. Pip uses your Claude account.",
+    claudeMissing: "Claude Code isn't installed. In your terminal: npm install -g @anthropic-ai/claude-code, then run claude once to sign in.",
+    colors: { blue: "blue", red: "red", green: "green", purple: "purple", gold: "gold" },
+  },
+  es: {
+    tagline: "de principiante a Maestro Python", yourName: "TU NOMBRE", pickColor: "ESCOGE TU COLOR", start: "▶ EMPEZAR LA AVENTURA",
+    intro: "PIP: ¡Hola, viajero! Soy Pip, una serpiente Python. Entre tú y el título de Maestro Python hay doce mundos. Antes de empezar… ¿cómo te llamas?",
+    welcome: (n) => `¡BIENVENIDO, ${n}!`, day: "DÍA", map: "MAPA", settings: "Ajustes", lv: "Nv",
+    days: (n) => `🔥 ${n} DÍA${n === 1 ? "" : "S"}`, pipOffline: "Pip desconectado", pipThinks: (m) => `pensando con ${m}`, noClaude: "No encontré Claude Code",
+    worlds: "Mundos", prevWorld: "Mundo anterior", nextWorld: "Mundo siguiente", world: (n) => `MUNDO ${n}`, worldOf: (n) => `MUNDO ${n} DE 12`,
+    locked: (b) => `🔒 Cerrado por ahora. Su castillo guarda el proyecto: ${b}. Este mundo recibe sus lecciones en una próxima actualización.`,
+    willLearn: "LO QUE VAS A APRENDER", castle: "CASTILLO", boss: "JEFE", enter: "▶ ENTRAR AL MUNDO", cont: "▶ CONTINUAR", replay: "▶ JUGAR DE NUEVO",
+    stopLabel: (w, i, t, s) => `Nivel ${w}-${i}: ${t} (${s})`, sDone: "superado", sHere: "estás aquí", sOpen: "abierto", sLocked: "cerrado",
+    back: "◂ VOLVER AL MAPA", editorTip: "Tab = 4 espacios · Ctrl+Enter = Correr", yourCode: "Tu código",
+    inputsLabel: "Respuestas para input(), separadas por comas", inputsPh: "ejemplo: Camilo, 22",
+    run: "▶ CORRER", check: "⚔ REVISAR", hint: "? PISTA", send: "ENVIAR", askPh: "Pregúntale a Pip…", askLabel: "Mensaje para Pip", you: "TÚ",
+    consoleStart: "Escribe tu código, presiona ▶ CORRER para probarlo y luego ⚔ REVISAR para enfrentar las pruebas.", running: "Corriendo…", facing: "Enfrentando las pruebas…",
+    tooLong: "\nTu programa tardó demasiado. ¿Hay un ciclo que nunca termina?", nothing: "(Corrió pero no imprimió nada.)",
+    levelUp: (r) => `¡SUBISTE DE NIVEL! ${r}`,
+    pipHello: (n) => `¡Vamos, ${n}! Lee la lección de la izquierda y luego escribe tu código. Si te atascas, pregúntame.`,
+    qExplainBtn: "Explícame la lección", qFailBtn: "¿Por qué falla?", qQuizBtn: "Hazme una pregunta",
+    qExplain: "Explícame esta lección de forma sencilla, con un ejemplo pequeñito. Pídeme que adivine qué imprime.",
+    qFail: "¿Por qué falla mi código? Dame una pista pequeña, no la respuesta.", qQuiz: "Hazme una pregunta rápida sobre esta lección.",
+    settingsTitle: "AJUSTES", name: "Nombre", language: "Idioma (juego, lecciones, pruebas y Pip)", heroColor: "Color del héroe", dailyGoal: "Meta de ejercicios por día",
+    pipBrain: "Cerebro de Pip (modelo de Claude)", save: "GUARDAR", cancel: "CANCELAR",
+    claudeOk: "✓ Encontré Claude Code. Pip usa tu cuenta de Claude.",
+    claudeMissing: "Claude Code no está instalado. En tu terminal: npm install -g @anthropic-ai/claude-code y luego corre claude una vez para iniciar sesión.",
+    colors: { blue: "azul", red: "rojo", green: "verde", purple: "morado", gold: "dorado" },
+  },
+};
+let LANG = "es";
+// the pixel display font has no accented capitals, so display text drops accents (DÍA → DIA)
+const up = (s) => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[¡¿]/g, "").toUpperCase();
+const T = (k, ...a) => { const v = I18N[LANG][k] ?? I18N.en[k]; return typeof v === "function" ? v(...a) : v; };
+function applyI18n() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("[data-t]").forEach((n) => { const v = T(n.dataset.t); n.textContent = getComputedStyle(n).fontFamily.includes("Press Start") ? up(v) : v; });
+  document.querySelectorAll("[data-t-label]").forEach((n) => n.setAttribute("aria-label", T(n.dataset.tLabel)));
+  document.querySelectorAll("[data-t-ph]").forEach((n) => { n.placeholder = T(n.dataset.tPh); });
 }
 
 /* ================= Hero sprites ================= */
@@ -300,100 +394,199 @@ const rankOf = (level) => Math.floor((level - 1) / 5);
 function drawHero(canvas, level, color) { draw(canvas, heroRows(rankOf(level)), { ...PAL, b: COLORS[color] || COLORS.blue }); }
 draw($("pipFace"), ["....bbbb....", "...bbbbbb...", "...bwkbwkb..", "...bbbbbbbr.", "....bbbb....", ".....bb.....", "..yyyybb....", ".yyyyyyy....", ".yy....yy...", ".yyyyyyyyy..", "..yyyyyyyyb.", "............"], { ...PAL, b: "#3d7bd9" });
 
-/* ================= World map: 320x200 island, 12 themed lands ================= */
-const MW = 320, MH = 200;
-const NODE_POS = [[30, 168], [64, 140], [40, 104], [92, 96], [128, 128], [168, 158], [200, 118], [174, 78], [222, 52], [258, 92], [286, 136], [292, 30]];
-const TERRAIN = {
-  meadow: ["#86d460", "#a8e27e", "#6fbf4c"], forest: ["#2f7a3a", "#256a30", "#3f8f49"], cave: ["#5d5672", "#4a4460", "#6e6884"],
-  river: ["#5bb04e", "#4aa043", "#6cc05c"], castle: ["#9fb07a", "#b2c28a", "#8ea06c"], swamp: ["#58714a", "#4b6340", "#6a8455"],
-  peaks: ["#9a9aa8", "#86869a", "#b0b0bd"], ruins: ["#d1b47a", "#c2a46a", "#dec48c"], harbor: ["#e7d397", "#dac684", "#f0dea6"],
-  citadel: ["#8a72c8", "#7a62b8", "#9a84d4"], docks: ["#a5784a", "#946a3e", "#b68856"], summit: ["#eef6ff", "#dce9f5", "#ffffff"],
+/* ================= Topic icons (9x9 pixel art), one per lesson topic ================= */
+const IP = { k: "#2a1c10", w: "#ffffff", y: "#ffcc33", r: "#d8473a", b: "#3d7bd9", g: "#3f9a4b", n: "#6a4422", N: "#c08a4a", s: "#8d8aa0" };
+const ICONS = {
+  print: [".kkkkkkk.", "kwwwwwwwk", "kwkkkkwwk", "kwwwwwwwk", "kwkkkwwwk", "kwwwwwwwk", ".kkkwkkk.", "...kwk...", "...kk...."],
+  box: ["kkkkkkkkk", "knNNNNNnk", "kNkNNNkNk", "kNNkNkNNk", "kNNNkNNNk", "kNNkNkNNk", "kNkNNNkNk", "knNNNNNnk", "kkkkkkkkk"],
+  math: ["..rr.....", "..rr.....", "rrrrrr...", "rrrrrr...", "..rr.....", "..rr.....", ".........", "...bbbbbb", "...bbbbbb"],
+  scroll: [".nwwwwwn.", "nwwwwwwwn", ".wkkkkkw.", ".wwwwwww.", ".wkkkkww.", ".wwwwwww.", ".wkkkkkw.", "nwwwwwwwn", ".nwwwwwn."],
+  keyboard: [".........", "kkkkkkkkk", "kwkwkwkwk", "kkkkkkkkk", "kwkwkwkwk", "kkkkkkkkk", "kkwwwwwkk", "kkkkkkkkk", "........."],
+  fork: ["....n....", ".yyyyyy..", ".yyyyyyy.", ".yyyyyy..", "....n....", "..rrrrrr.", ".rrrrrrr.", "..rrrrrr.", "....n...."],
+  loop: ["..ggggg..", ".g.....g.", "g.......g", "g.......g", "g.......g", ".g.....g.", "..gg..gg.", "....ggg..", ".....g..."],
+  wheel: ["..kkkkk..", ".k..k..k.", "k...k...k", "k.k.k.k.k", "kkkkykkkk", "k.k.k.k.k", "k...k...k", ".k..k..k.", "..kkkkk.."],
+  list: [".........", "r.kkkkkkk", ".........", "r.kkkkkkk", ".........", "r.kkkkkkk", ".........", "r.kkkkkkk", "........."],
+  key: [".........", ".yyy.....", "y...y....", "y...yyyyy", "y...y.y.y", ".yyy...y.", ".........", ".........", "........."],
+  shield: ["kkkkkkkkk", "kbbbbwwwk", "kbbbbwwwk", "kbbbbwwwk", "kwwwwbbbk", ".kwwwbbk.", "..kwwbk..", "...kkk...", "........."],
+  bug: ["..k...k..", "...k.k...", "..rrrrr..", "krrkrkrrk", ".rrrkrrr.", "krrkrkrrk", ".rrrkrrr.", "k.rrrrr.k", "........."],
+  gear: ["...kkk...", ".k.sss.k.", "..sssss..", "kss...ssk", "kss...ssk", "kss...ssk", "..sssss..", ".k.sss.k.", "...kkk..."],
+  crown: [".........", "y...y...y", "yy.yyy.yy", "yyyyyyyyy", "yryybyyry", "yyyyyyyyy", "kkkkkkkkk", ".........", "........."],
+  star: ["....y....", "....y....", "...yyy...", "yyyyyyyyy", ".yyyyyyy.", "..yyyyy..", ".yyy.yyy.", ".yy...yy.", "........."],
+  check: ["........g", ".......gg", "......gg.", "g....gg..", "gg..gg...", ".gggg....", "..gg.....", ".........", "........."],
+  file: ["kkkkkk...", "kwwwwkk..", "kwwwwwkk.", "kwkkkwwk.", "kwwwwwwk.", "kwkkkkwk.", "kwwwwwwk.", "kwkkkkwk.", "kkkkkkkk."],
+  terminal: ["kkkkkkkkk", "kkkkkkkkk", "kgkkkkkkk", "kkgkkkkkk", "kgkkkkkkk", "kkkkggggk", "kkkkkkkkk", ".........", "........."],
+  globe: ["..bbbbb..", ".bggbbbb.", "bgggbbggb", "bbggbbggb", "bbbbbbbgb", "bbggbbbbb", ".bggbbbb.", "..bbbbb..", "........."],
+  db: [".kkkkkkk.", "kwwwwwwwk", "kkkkkkkkk", "kbbbbbbbk", "kkkkkkkkk", "kbbbbbbbk", "kkkkkkkkk", "kbbbbbbbk", ".kkkkkkk."],
+  rocket: ["....r....", "...rwr...", "...wbw...", "...www...", "...www...", "..rwwwr..", ".rr.y.rr.", "....y....", "........."],
+  robot: ["....y....", ".kkkkkkk.", ".ksssssk.", ".kbsssbk.", ".ksssssk.", ".kskkksk.", ".kkkkkkk.", "s.sssss.s", "..s...s.."],
+  flag: ["kyyyyy...", "kyyyyyy..", "kyyyyy...", "k........", "k........", "k........", "kk.......", ".........", "........."],
+  dot: [".........", ".........", "...kkk...", "..kyyyk..", "kkkyyykkk", "..kyyyk..", "...kkk...", ".........", "........."],
+  cloud: [".........", "...www...", "..wwwww..", ".wwwwwwww", "wwwwwwwww", ".wwwwwww.", ".........", ".........", "........."],
+  mail: [".........", "kkkkkkkkk", "kkwwwwwkk", "kwkwwwkwk", "kwwkkkwwk", "kwwwwwwwk", "kkkkkkkkk", ".........", "........."],
+  clock: ["..kkkkk..", ".kwwkwwk.", "kwwwkwwwk", "kwwwkkkwk", "kwwwwwwwk", ".kwwwwwk.", "..kkkkk..", ".........", "........."],
+  lens: [".kkkk....", "kwwwwk...", "kwwwwk...", "kwwwwk...", ".kkkkk...", ".....nn..", "......nn.", ".......nn", "........."],
+  bars: [".........", ".......g.", ".....g.g.", "...g.g.g.", ".g.g.g.g.", ".g.g.g.g.", "kkkkkkkkk", ".........", "........."],
+  stack: [".........", ".sssssss.", ".........", ".sssssss.", ".........", ".sssssss.", ".........", ".sssssss.", "........."],
+  tree: ["....g....", "...k.k...", "..g...g..", ".k.k.k.k.", "g.g...g.g", ".........", ".........", ".........", "........."],
+  bolt: [".....yy..", "....yy...", "...yy....", "..yyyyy..", "....yy...", "...yy....", "..yy.....", ".........", "........."],
+  castle: ["r...r...r", "k.k.k.k.k", "kkkkkkkkk", "ksskkkssk", "kkkkkkkkk", "kssk.kssk", "kkk...kkk", "kkk...kkk", "........."],
+  lock: ["..kkkkk..", ".k.....k.", ".k.....k.", "kkkkkkkkk", "kyyyyyyyk", "kyyykyyyk", "kyyykyyyk", "kyyyyyyyk", "kkkkkkkkk"],
 };
-function rnd(i) { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
-let mapOwner = null;
-function buildOwners() {
-  mapOwner = new Int8Array(MW * MH).fill(-1);
-  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
-    let best = 1e9, mi = -1;
-    NODE_POS.forEach(([nx, ny], i) => { const d = (nx - x) ** 2 + ((ny - y) * 1.25) ** 2 + rnd(x * 31 + y * 17 + i) * 140; if (d < best) { best = d; mi = i; } });
-    if (best < 1500 + rnd(x * 3 + y * 7) * 300) mapOwner[y * MW + x] = mi;
-  }
-}
-function sprite(ctx, x, y, rows, pal) { rows.forEach((r, dy) => [...r].forEach((ch, dx) => { if (ch !== "." && pal[ch]) { ctx.fillStyle = pal[ch]; ctx.fillRect(x + dx, y + dy, 1, 1); } })); }
+const ALIAS = { func: "star", fence: "shield", pair: "box", nest: "box", path: "flag", table: "list", puzzle: "box", merge: "fork", blueprint: "file", tag: "flag", broom: "star", spiral: "loop", chain: "list", graph: "tree", crate: "box", spark: "star" };
+function drawIcon(canvas, key) { canvas.width = 9; canvas.height = 9; draw(canvas, ICONS[key] || ICONS[ALIAS[key]] || ICONS.star, IP); return canvas; }
+
+/* ================= World map: a top-down island per world, one level tile per lesson ================= */
+const MW = 320, MH = 180;
+const THEMES = {
+  meadow:  { grass: ["#8ee04a", "#7fd23e", "#5fb42e"], patch: ["#f0a640", "#e2922c"], high: ["#a8ec62", "#94de4e"], deco: ["bigtree", "bush", "flower", "house", "bigtree", "rock"], river: true },
+  forest:  { grass: ["#4fae4a", "#45a040", "#2f7f30"], patch: ["#2f7a3a", "#256a30"], high: ["#62c25a", "#55b44e"], deco: ["pine", "bigtree", "pine", "mushroom", "bigtree"], river: true },
+  cave:    { grass: ["#7f7896", "#746d8a", "#5a5470"], patch: ["#4a4460", "#3c3752"], high: ["#958eab", "#8a83a0"], deco: ["rock", "crystal", "caveMouth", "crystal", "torch", "rock"], dark: true },
+  river:   { grass: ["#74cc56", "#68be4c", "#4fa43a"], patch: ["#e8d49a", "#d8c084"], high: ["#8ad86a", "#7ccc5e"], deco: ["bigtree", "reed", "bush", "reed", "flower"], river: true, lake: true },
+  castle:  { grass: ["#a9c47a", "#9cb86e", "#7f9c56"], patch: ["#c9a26a", "#b48c56"], high: ["#bcd38c", "#b0c880"], deco: ["banner", "bigtree", "tower", "bush", "flower"] },
+  swamp:   { grass: ["#6f8f52", "#648448", "#4f6c3a"], patch: ["#4d6b5a", "#3f5a4a"], high: ["#80a060", "#759656"], deco: ["reed", "lily", "deadtree", "mushroom", "reed"], river: true, lake: true },
+  peaks:   { grass: ["#b8bccb", "#adb1c2", "#8f93a8"], patch: ["#eef3fb", "#dfe7f3"], high: ["#cdd2de", "#c2c7d6"], deco: ["mountain", "snowpine", "rock", "mountain"] },
+  ruins:   { grass: ["#ecd08e", "#e2c480", "#c9a764"], patch: ["#d89a52", "#c78844"], high: ["#f4dca0", "#ecd294"], deco: ["pillar", "broken", "cactus", "rock", "cactus"] },
+  harbor:  { grass: ["#7fd05a", "#72c34e", "#58a83c"], patch: ["#f2dc9c", "#e6ce8a"], high: ["#94dc6e", "#88d262"], deco: ["palm", "lighthouse", "crate", "bigtree", "ship"], lake: true },
+  citadel: { grass: ["#9a84d4", "#8e78c8", "#6f5aa8"], patch: ["#5a4696", "#4c3a84"], high: ["#ae9ae0", "#a28ed6"], deco: ["tower", "crystal", "banner", "crystal"], dark: true },
+  docks:   { grass: ["#c59866", "#ba8c5a", "#9a7042"], patch: ["#8a6a4a", "#7a5c3e"], high: ["#d4a874", "#c99c68"], deco: ["crate", "crane", "barrel", "crate", "ship"], lake: true },
+  summit:  { grass: ["#f2f7ff", "#e6eefa", "#c9d6ea"], patch: ["#b9c6dc", "#a8b6ce"], high: ["#ffffff", "#f4f8ff"], deco: ["bigpeak", "snowpine", "flag", "snowpine", "rock"] },
+};
 const SPR = {
-  tree: ["..g..", ".ggg.", "ggGgg", ".ggg.", "..n.."],
+  bigtree: ["...gggg...", ".ggGGgggg.", "gggGGggggg", "ggggggGggg", "gGgggggggg", "gggggGgggg", ".gggggggg.", "..gggggg..", "....nn....", "....nn...."],
+  bush: ["..ggg..", ".gGggg.", "gggGggg", "ggggggg"],
   pine: ["...g...", "..ggg..", ".ggGgg.", "..ggg..", ".ggggg.", "ggggGgg", "...n..."],
+  snowpine: ["...w...", "..wgw..", ".gwggg.", "..ggg..", ".wgggw.", "ggggGgg", "...n..."],
+  deadtree: ["n...n", ".n.n.", "..n..", "..n..", ".nnn."],
+  mushroom: [".rrr.", "rwrwr", "..w..", "..w.."],
   flower: [".r.", "ryr", ".l."],
   house: ["...rr...", "..rrrr..", ".rrrrrr.", "rrrrrrrr", ".wwwwww.", ".wdwwnw.", ".wwwwnw."],
   rock: [".kk.", "kKKk", "kKKk"],
   caveMouth: ["..kkkk..", ".kKKKKk.", "kKk..kKk", "kK....Kk", "kK....Kk"],
   crystal: [".c.", "cCc", "cCc"],
-  bridge: ["nnnnnnnnnn", "n.n.n.n.n.", "nnnnnnnnnn"],
-  castle: ["r.........", "rr........", "r..w...w..", "k.kkk.kkk.", "kkKkkkkKkk", "kkkkkkkkkk", "kKkkkkkkKk", "kkkk..kkkk", "kkkk..kkkk"],
+  torch: ["y", "r", "n", "n"],
+  bigcastle: ["r.......r.......", "rr......rr......", "r.......r.......", "k.k.k...k.k.k...", "kkkkk...kkkkk...", "kKkKk.k.kKkKk...", "kkkkkkkkkkkkkkk.", "kKkkkkKkkkkkKkk.", "kkkkkk...kkkkkk.", "kkkkk.....kkkkk.", "kkkkk.....kkkkk."],
+  tower: [".y.", "vvv", "vVv", "vvv", "vVv", "vvv", "vVv", "vvv"],
+  banner: ["n.", "nr", "nr", "n.", "n."],
   reed: ["n.n", "lnl", ".l.", ".l."],
   lily: [".ll.", "llrl", ".ll."],
   mountain: ["....w....", "...www...", "..wkkKk..", ".kkkKkkk.", "kkkkkkKkk"],
+  bigpeak: ["......y......", "......y......", ".....www.....", "....wwwww....", "...wwkwwkw...", "..wkkkwkkkw..", ".kkkKkkkkKkk.", "kkkkkkkkkkkkk"],
   pillar: ["kkk", ".k.", ".K.", ".k.", ".K.", "kkk"],
   broken: ["kk.", ".k.", ".K.", "kkk"],
+  cactus: [".l.", ".ll", "ll.", ".l.", ".l."],
   ship: ["...w...", "..ww...", ".www...", "..n....", "nnnnnnn", ".nnnnn."],
-  tower: [".y.", "vvv", "vVv", "vvv", "vVv", "vvv", "vVv", "vvv"],
+  lighthouse: [".y.", "rrr", "www", "rrr", "www", "rrr", "www"],
+  palm: ["gg.gg", "..n..", "..n..", ".n...", ".n..."],
   crate: ["nnn", "nNn", "nnn"],
+  barrel: [".nn.", "nNNn", "kkkk", "nNNn", ".nn."],
   crane: ["kkkkkk", "k....n", "k....n", "k.....", "k.....", "kk...."],
-  bigpeak: ["......y......", "......y......", ".....www.....", "....wwwww....", "...wwkwwkw...", "..wkkkwkkkw..", ".kkkKkkkkKkk.", "kkkkkkkkkkkkk"],
+  flag: ["kyy", "kyy", "k..", "k..", "k.."],
 };
-const SP = { g: "#1f6a2a", G: "#2f8a3a", n: "#6a4422", N: "#8a5a2b", r: "#c8453a", y: "#ffcc33", l: "#3f9a4b", w: "#ffffff", d: "#3a2717", k: "#5a5668", K: "#77738a", c: "#7ee8ff", C: "#c9f6ff", v: "#5a3aa0", V: "#7a4fd6" };
-const LANDMARKS = [
-  [["house", 18, 150], ["flower", 44, 176], ["flower", 14, 180], ["flower", 50, 160], ["tree", 6, 160], ["flower", 32, 186]],
-  [["pine", 52, 120], ["pine", 74, 124], ["pine", 60, 146], ["tree", 82, 150], ["pine", 46, 134], ["tree", 70, 160]],
-  [["caveMouth", 26, 92], ["rock", 52, 112], ["crystal", 44, 88], ["crystal", 20, 112], ["rock", 30, 118]],
-  [["bridge", 86, 84], ["tree", 108, 104], ["tree", 74, 104]],
-  [["castle", 118, 108], ["tree", 140, 140], ["flower", 112, 140]],
-  [["reed", 158, 146], ["lily", 176, 170], ["reed", 182, 150], ["lily", 156, 172], ["reed", 170, 176]],
-  [["mountain", 188, 98], ["mountain", 204, 128], ["mountain", 214, 104]],
-  [["pillar", 160, 66], ["broken", 186, 70], ["pillar", 178, 88], ["broken", 164, 90]],
-  [["ship", 236, 36], ["ship", 206, 30], ["crate", 228, 62]],
-  [["tower", 264, 70], ["tower", 248, 96], ["flower", 270, 104]],
-  [["crane", 276, 116], ["crate", 296, 144], ["crate", 292, 140], ["crate", 270, 150], ["ship", 300, 160]],
-  [["bigpeak", 284, 6], ["mountain", 270, 40], ["mountain", 302, 44]],
-];
-let waveT = 0, mapMods = null;
-function drawWorld(mods) {
-  mapMods = mods;
-  if (!mapOwner) buildOwners();
+const SP = { g: "#1f6a2a", G: "#5fb84f", n: "#6a4422", N: "#8a5a2b", r: "#c8453a", y: "#ffcc33", l: "#3f9a4b", w: "#ffffff", d: "#3a2717", k: "#5a5668", K: "#77738a", c: "#7ee8ff", C: "#c9f6ff", v: "#5a3aa0", V: "#7a4fd6" };
+function rnd(i) { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
+function sprite(ctx, x, y, rows, pal, scale = 1) { rows.forEach((r, dy) => [...r].forEach((ch, dx) => { if (ch !== "." && pal[ch]) { ctx.fillStyle = pal[ch]; ctx.fillRect(x + dx * scale, y + dy * scale, scale, scale); } })); }
+/* Level tiles snake across the island in rows, like a board game: right, down, left, down, right… */
+function stopPositions(n) {
+  const perRow = Math.max(2, Math.ceil(n / 3)), rows = Math.ceil(n / perRow);
+  const ys = rows === 1 ? [92] : rows === 2 ? [62, 124] : [46, 94, 142];
+  const step = 210 / (perRow - 1), pts = [];
+  for (let i = 0; i < n; i++) {
+    const r = Math.floor(i / perRow), c = i % perRow, x = r % 2 ? 265 - c * step : 55 + c * step;
+    pts.push([Math.round(x), ys[r]]);
+  }
+  return pts;
+}
+function riverX(y, seed) { return 222 + Math.sin(y * 0.055 + seed) * 16; }
+let worldCache = null;
+function drawWorldMap(mod, stops, hereIdx) {
+  const th = THEMES[mod.terrain] || THEMES.meadow, seed = mod.n * 7.31, S = mod.n * 101;
   const ctx = $("mapCanvas").getContext("2d");
+  const key = mod.id;
+  if (!worldCache || worldCache.key !== key) {
+    // island mask: a wobbly blob that leaves sea and clouds around the edges
+    const land = new Uint8Array(MW * MH);
+    for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+      const nx = (x - 160) / 152, ny = (y - 94) / 84;
+      const wob = 0.07 * Math.sin(x * 0.06 + seed) + 0.07 * Math.sin(y * 0.08 + seed * 2) + 0.05 * Math.sin((x - y) * 0.045 + seed);
+      land[y * MW + x] = nx * nx + ny * ny + wob < 1 ? 1 : 0;
+    }
+    const inPatch = (x, y) => ((x - 82) / 62) ** 2 + ((y - 126) / 40) ** 2 + 0.08 * Math.sin(x * 0.2 + seed) < 1;
+    const inHigh = (x, y) => ((x - 250) / 62) ** 2 + ((y - 44) / 34) ** 2 + 0.08 * Math.sin(y * 0.25 + seed) < 1;
+    worldCache = { key, land, inPatch, inHigh };
+  }
+  const { land, inPatch, inHigh } = worldCache;
+  const isLand = (x, y) => x >= 0 && y >= 0 && x < MW && y < MH && land[y * MW + x] === 1;
   const img = ctx.createImageData(MW, MH), D = img.data, cache = {};
   const col = (h) => cache[h] || (cache[h] = [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]);
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
-    const o = mapOwner[y * MW + x]; let c;
-    if (o < 0) {
-      const near = (x > 0 && mapOwner[y * MW + x - 1] >= 0) || (x < MW - 1 && mapOwner[y * MW + x + 1] >= 0) || (y > 0 && mapOwner[(y - 1) * MW + x] >= 0) || (y < MH - 1 && mapOwner[(y + 1) * MW + x] >= 0);
-      c = near ? col("#e8f6ff") : ((x + y * 3 + waveT) % 23 === 0 && y % 6 === 0) ? col("#8fc9f5") : col(rnd(x * 7 + y) > 0.5 ? "#3d86d6" : "#3a80cf");
+    let c;
+    if (!isLand(x, y)) {
+      let foam = false;
+      for (let d = 1; d <= 3 && !foam; d++) foam = isLand(x, y - d) || isLand(x - d, y) || isLand(x + d, y) || isLand(x, y + d);
+      const wave = (x + Math.floor(y / 4) * 5 + cloudT) % 19 === 0 && y % 4 === 0;
+      c = col(foam ? "#e8f6ff" : wave ? "#9fd4fa" : (x + y) % 2 ? "#3d8be0" : "#3a84d6");
+    } else if (!isLand(x, y + 5)) {
+      c = col((x + y) % 4 < 2 ? "#8a5228" : "#6e3e1c"); // cliff face
+      if (!isLand(x, y + 1)) c = col("#4a2a12");
     } else {
-      const t = TERRAIN[mods[o].terrain], r = rnd(x * 7 + y * 13);
-      c = col(r > 0.86 ? t[1] : r > 0.72 ? t[2] : t[0]);
-      const right = x < MW - 1 ? mapOwner[y * MW + x + 1] : o, down = y < MH - 1 ? mapOwner[(y + 1) * MW + x] : o;
-      if ((right >= 0 && right !== o) || (down >= 0 && down !== o)) c = col("#4f3015");
-      if (!mods[o].open) c = c.map((v) => Math.round(v * 0.62 + 40 * 0.38));
+      const hi = inHigh(x, y), pa = !hi && inPatch(x, y);
+      const t = hi ? th.high : pa ? th.patch : th.grass;
+      c = col(((x >> 3) + (y >> 3)) % 2 ? t[0] : t[1]);
+      if (rnd(x * 7 + y * 13 + S) > 0.965) c = col(t[2] || t[1]);
+      if (hi && !inHigh(x, y + 4)) c = col((x + y) % 3 ? "#7a4a22" : "#5e3618"); // plateau cliff
+      if (pa && !inPatch(x, y + 3) && !inHigh(x, y + 3)) c = col("#a0622c");     // patch edge
+      if (dark(th) && rnd(x * 3 + y * 5) > 0.97) c = col("#ffffff40".slice(0, 7));
     }
     const i = (y * MW + x) * 4; D[i] = c[0]; D[i + 1] = c[1]; D[i + 2] = c[2]; D[i + 3] = 255;
   }
   ctx.putImageData(img, 0, 0);
-  ctx.fillStyle = "#4f9fe8";
-  for (let s = 0; s < 70; s++) { const x = 70 + s, y = Math.round(80 + Math.sin(s / 7) * 5); if (mapOwner[y * MW + x] === 3 || mapOwner[y * MW + x] === 2) ctx.fillRect(x, y, 2, 3); }
-  for (let i = 0; i < NODE_POS.length - 1; i++) {
-    const [ax, ay] = NODE_POS[i], [bx, by] = NODE_POS[i + 1];
-    const steps = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
-    for (let s = 0; s <= steps; s++) {
-      const x = Math.round(ax + (bx - ax) * s / steps), y = Math.round(ay + (by - ay) * s / steps);
-      ctx.fillStyle = s % 4 < 2 ? "#f0dca4" : "#d9bf7a"; ctx.fillRect(x, y, 2, 2);
-    }
+  // grass tufts
+  ctx.fillStyle = th.grass[2];
+  for (let i = 0; i < 120; i++) { const x = Math.floor(rnd(S + i * 7) * MW), y = Math.floor(rnd(S + i * 11) * MH); if (isLand(x, y + 6) && isLand(x, y)) { ctx.fillRect(x, y, 1, 2); ctx.fillRect(x + 2, y, 1, 2); ctx.fillRect(x + 1, y + 1, 1, 1); } }
+  // river with a waterfall over the south cliff
+  if (th.river) for (let y = 0; y < MH; y++) {
+    const x = Math.round(riverX(y, seed)); if (!isLand(x, y) && !isLand(x, y - 6)) continue;
+    ctx.fillStyle = "#2f6fc0"; ctx.fillRect(x - 6, y, 12, 1);
+    ctx.fillStyle = "#4f9fe8"; ctx.fillRect(x - 5, y, 10, 1);
+    ctx.fillStyle = (y + cloudT) % 7 === 0 ? "#e8f6ff" : "#6fb6f2"; ctx.fillRect(x - 2 + ((y >> 2) % 3), y, 3, 1);
   }
-  LANDMARKS.forEach((list, i) => { ctx.globalAlpha = mods[i].open ? 1 : 0.55; for (const [name, x, y] of list) sprite(ctx, x, y, SPR[name], SP); });
-  ctx.globalAlpha = 1;
+  if (th.lake) { ctx.fillStyle = "#2f6fc0"; ctx.beginPath(); ctx.ellipse(150, 120, 20, 9, 0, 0, 7); ctx.fill(); ctx.fillStyle = "#4f9fe8"; ctx.beginPath(); ctx.ellipse(150, 120, 18, 7, 0, 0, 7); ctx.fill(); ctx.fillStyle = "#cfe8ff"; ctx.fillRect(140 + (cloudT % 12), 118, 5, 1); }
+  // clouds hugging the corners of the map
+  [[-6, 150, 26], [18, 168, 20], [300, 160, 28], [328, 130, 22], [-10, 20, 18], [316, 8, 20], [150, 186, 16]].forEach(([cx, cy, r]) => {
+    ctx.fillStyle = "#cfe8fb"; ctx.beginPath(); ctx.arc(cx + 2, cy + 3, r, 0, 7); ctx.fill();
+    ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+  });
+  // paths: thick white roads with a dark outline, round junction dots between tiles
+  const segs = [];
+  for (let i = 0; i < stops.length - 1; i++) segs.push([stops[i], stops[i + 1], i]);
+  const lineRect = (a, b, w) => [Math.min(a[0], b[0]) - w, Math.min(a[1], b[1]) - w, Math.abs(a[0] - b[0]) + 2 * w + 1, Math.abs(a[1] - b[1]) + 2 * w + 1];
+  // bridges first, under the road
+  if (th.river) for (const [a, b] of segs) if (a[1] === b[1]) {
+    const rx = riverX(a[1], seed); if (rx > Math.min(a[0], b[0]) && rx < Math.max(a[0], b[0])) { ctx.fillStyle = "#6a4422"; ctx.fillRect(Math.round(rx) - 9, a[1] - 5, 18, 11); ctx.fillStyle = "#b07a40"; for (let k = -8; k < 9; k += 3) ctx.fillRect(Math.round(rx) + k, a[1] - 4, 2, 9); }
+  }
+  for (const [a, b] of segs) { ctx.fillStyle = "#1c2a4a"; ctx.fillRect(...lineRect(a, b, 3)); }
+  for (const [a, b, i] of segs) { ctx.fillStyle = i < hereIdx ? "#fff6c8" : "#ffffff"; ctx.fillRect(...lineRect(a, b, 2)); ctx.fillStyle = i < hereIdx ? "#ffd84a" : "#bfe2ff"; ctx.fillRect(...lineRect(a, b, 0)); }
+  const dot = (x, y) => { ctx.fillStyle = "#1c2a4a"; ctx.beginPath(); ctx.arc(x + 0.5, y + 0.5, 5, 0, 7); ctx.fill(); ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x + 0.5, y + 0.5, 3.6, 0, 7); ctx.fill(); };
+  for (const [a, b] of segs) dot(Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2));
+  // decorations, kept off the roads and tiles
+  const clear = (x, y, w, h) => !segs.some(([a, b]) => { const [rx, ry, rw, rh] = lineRect(a, b, 12); return x < rx + rw && x + w > rx && y < ry + rh && y + h > ry; });
+  let placed = 0;
+  for (let i = 0; i < 400 && placed < 34; i++) {
+    const name = th.deco[i % th.deco.length], spr = SPR[name], w = spr[0].length, h = spr.length;
+    const x = Math.floor(rnd(S + i * 13) * (MW - w)), y = Math.floor(rnd(S + i * 17) * (MH - h));
+    if (!isLand(x, y) || !isLand(x + w, y + h + 6) || !isLand(x, y + h + 6) || !clear(x, y, w, h)) continue;
+    if (th.river && Math.abs(riverX(y + h / 2, seed) - (x + w / 2)) < 12) continue;
+    sprite(ctx, x, y, spr, SP); placed++;
+  }
+  // the boss castle beside the last tile
+  const [cx, cy] = stops[stops.length - 1];
+  sprite(ctx, cx + 14, cy - 26, SPR.bigcastle, SP, 2);
+  if (!mod.open) { ctx.fillStyle = "#1c163050"; ctx.fillRect(0, 0, MW, MH); }
 }
+const dark = (th) => !!th.dark;
 function layoutMap() {
-  const frame = $("mapFrame"), wrap = $("mapWrap");
-  const fw = frame.clientWidth - 28, fh = frame.clientHeight - 28;
+  const area = $("mapArea"), wrap = $("mapWrap");
+  const fw = area.clientWidth - 6, fh = area.clientHeight - 6;
   const scale = Math.max(1, Math.min(fw / MW, fh / MH));
   wrap.style.width = Math.floor(MW * scale) + "px"; wrap.style.height = Math.floor(MH * scale) + "px";
   return scale;
@@ -429,107 +622,152 @@ function inline(node, text) {
 }
 
 /* ================= App state ================= */
-let G = null, current = null, lastError = "", chat = [], selectedModule = 0;
-const floatText = (t) => { const f = el("div", "float", t); document.body.append(f); setTimeout(() => f.remove(), 1800); };
+let G = null, current = null, lastError = "", chat = [], selectedModule = 0, cloudT = 0;
+const floatText = (t) => { const f = el("div", "float", up(t)); document.body.append(f); setTimeout(() => f.remove(), 1800); };
 function show(screen) {
   for (const id of ["screenStart", "screenWorld", "screenLesson"]) $(id).hidden = id !== screen;
   $("hud").hidden = screen === "screenStart";
 }
+const loc = (m) => m[LANG] || m.en;
 function modulesWithStatus() {
   return G.modules.map((m) => {
     const exs = G.exercises.filter((e) => e.module === m.id);
-    return { ...m, exs, open: exs.length > 0, done: exs.length > 0 && exs.every((e) => e.passed) };
+    // one stop per lesson; a planned world shows one stop per topic
+    let stops;
+    if (exs.length) {
+      const byLesson = [];
+      for (const e of exs) { let s = byLesson.find((x) => x.lesson === e.lesson); if (!s) { s = { lesson: e.lesson, title: e.lessonTitle, exs: [], build: e.build }; byLesson.push(s); } s.exs.push(e); }
+      stops = byLesson.map((s, i) => ({ ...s, icon: s.build ? "castle" : m.icons[i] || "star", short: s.build ? loc(m).build : (loc(m).topics[i] || s.title), done: s.exs.every((e) => e.passed) }));
+    } else {
+      stops = loc(m).topics.map((t, i) => ({ icon: m.icons[i] || "star", short: t, exs: [], done: false }));
+      stops.push({ icon: "castle", short: T("castle"), exs: [], build: true, done: false });
+    }
+    return { ...m, L: loc(m), exs, stops, open: exs.length > 0, done: exs.length > 0 && exs.every((e) => e.passed) };
   });
 }
 const modelLabel = () => { const m = G.models.find((x) => x.id === (G.config.claude_model || "")); return m ? m.label.split(" · ")[0] : G.config.claude_model; };
 function renderHud() {
   const { level, save, config } = G;
   drawHero($("hudHero"), level.n, config.hero_color);
-  $("hudName").textContent = config.name.toUpperCase();
-  $("hudRank").textContent = `Lv ${level.n} · ${level.name}`;
+  $("hudName").textContent = up(config.name);
+  $("hudRank").textContent = `${T("lv")} ${level.n} · ${level.name}`;
   $("xpFill").style.width = (level.to ? Math.max(3, ((save.xp - level.from) / (level.to - level.from)) * 100) : 100) + "%";
   $("xpText").textContent = level.to ? `${save.xp}/${level.to}` : `${save.xp} MAX`;
   $("goalFill").style.width = Math.min(100, (G.doneToday / config.daily_goal) * 100) + "%";
   $("goalText").textContent = `${G.doneToday}/${config.daily_goal}`;
-  $("streak").textContent = `🔥 ${save.streak} DAY${save.streak === 1 ? "" : "S"}`;
-  $("modelTag").textContent = G.claude ? `Pip: ${modelLabel()}` : "Pip offline";
-  $("pipModel").textContent = G.claude ? `thinking with ${modelLabel()}` : "Claude Code not found";
+  $("streak").textContent = up(T("days", save.streak));
+  $("modelTag").textContent = G.claude ? `Pip: ${modelLabel()}` : T("pipOffline");
+  $("pipModel").textContent = G.claude ? T("pipThinks", modelLabel()) : T("noClaude");
 }
+let mapState = null;
 function renderWorld() {
-  const mods = modulesWithStatus();
+  const mods = modulesWithStatus(), m = mods[selectedModule];
+  // world tabs
+  const tabs = $("wtabs"); tabs.textContent = "";
+  mods.forEach((w, i) => {
+    const b = el("button", "wtab" + (w.done ? " done" : "") + (!w.open ? " locked" : "") + (i === selectedModule ? " sel" : ""));
+    b.append(drawIcon(el("canvas"), w.open ? (w.done ? "check" : w.icons[0]) : "lock"), el("span", null, String(w.n)));
+    b.title = w.L.land; b.setAttribute("aria-label", `${T("world", w.n)}: ${w.L.land}`);
+    b.setAttribute("aria-current", i === selectedModule ? "true" : "false");
+    b.onclick = () => { selectedModule = i; renderWorld(); };
+    tabs.append(b);
+  });
+  $("prevWorld").disabled = selectedModule === 0; $("nextWorld").disabled = selectedModule === mods.length - 1;
+  // the stage
   const scale = layoutMap();
-  drawWorld(mods);
-  const here = Math.max(0, mods.findIndex((m) => m.open && !m.done));
-  const box = $("nodes"); box.textContent = "";
-  mods.forEach((m, i) => {
-    const b = el("button", "node" + (m.done ? " done" : "") + (!m.open ? " locked" : "") + (i === here ? " here" : "") + (i === selectedModule ? " sel" : ""), m.open ? String(m.n) : "🔒");
-    b.style.left = NODE_POS[i][0] * scale + "px"; b.style.top = NODE_POS[i][1] * scale + "px";
-    b.append(el("span", "tag", m.land.toUpperCase()));
-    b.setAttribute("aria-label", `Land ${m.n}: ${m.land}${m.open ? "" : " (locked)"}`);
-    b.addEventListener("click", () => { selectedModule = i; renderWorld(); });
+  const pts = stopPositions(m.stops.length);
+  const hereIdx = m.open ? Math.max(0, m.stops.findIndex((s) => !s.done)) : -1;
+  mapState = { m, pts, hereIdx };
+  drawWorldMap(m, pts, hereIdx < 0 ? (m.done ? pts.length : 0) : hereIdx);
+  $("wtitle").textContent = up(`${T("world", m.n)} · ${m.L.land}`);
+  const box = $("stops"); box.textContent = "";
+  m.stops.forEach((s, i) => {
+    const state = !m.open ? "locked" : s.done ? "done" : i === hereIdx ? "here" : "open";
+    const b = el("button", `stop ${state}` + (s.build ? " boss" : ""));
+    b.append(drawIcon(el("canvas"), s.icon), el("span", "num", String(i + 1)), el("span", "cap", s.short));
+    if (s.done) b.append(el("span", "flagdone", "⚑"));
+    const [x, y] = pts[i];
+    b.style.left = x * scale + "px"; b.style.top = y * scale + "px";
+    b.setAttribute("aria-label", T("stopLabel", m.n, i + 1, s.short, T({ locked: "sLocked", done: "sDone", here: "sHere", open: "sOpen" }[state])));
+    if (m.open) b.onclick = () => openExercise((s.exs.find((e) => !e.passed) || s.exs[0]).id);
+    else b.disabled = true;
     box.append(b);
   });
+  // keep stop captions from colliding: hide every other caption when the map is small
+  if (scale < 2.2) [...box.children].forEach((b, i) => { if (i % 2 && !b.classList.contains("here")) b.querySelector(".cap").hidden = true; });
   const hero = $("heroToken"); drawHero(hero, G.level.n, G.config.hero_color);
-  hero.style.left = NODE_POS[here][0] * scale + 20 + "px"; hero.style.top = NODE_POS[here][1] * scale + 6 + "px";
-  renderRegion(mods[selectedModule]);
+  const hp = pts[Math.max(0, hereIdx)];
+  hero.hidden = $("youTag").hidden = !m.open || m.done;
+  hero.style.left = (hp[0] * scale - 30) + "px"; hero.style.top = (hp[1] * scale + 8) + "px";
+  $("youTag").textContent = up(T("you")) + "\n▼"; $("youTag").style.whiteSpace = "pre";
+  $("youTag").style.left = hp[0] * scale + "px"; $("youTag").style.top = (hp[1] * scale - 26) + "px";
+  renderRegion(m);
 }
 function renderRegion(m) {
   const r = $("region"); r.textContent = "";
-  r.append(el("div", "label", `LAND ${m.n} OF 12`), el("h3", null, m.land.toUpperCase()), el("div", "sub", m.name));
-  const t = el("div", "topics"); m.topics.forEach((x) => t.append(el("span", null, x))); r.append(t);
-  if (!m.open) { r.append(el("div", "coming", `🔒 Locked for now. Boss: ${m.build}. This land gets its lessons in a future update.`)); return; }
-  const ul = el("ul", "region-list"); let lastLesson = null;
-  for (const ex of m.exs) {
-    if (ex.lesson !== lastLesson) { lastLesson = ex.lesson; ul.append(el("li", "lesson-head", ex.lesson.replace(/^\d+_/, "").replace(/_/g, " ").toUpperCase())); }
-    const li = el("li"); const b = el("button", "lesson-btn" + (ex.passed ? " done" : "") + (ex.build ? " boss" : ""));
-    b.append(el("span", "dot"), el("span", null, (ex.build ? "BOSS · " : "") + ex.title));
-    b.addEventListener("click", () => openExercise(ex.id)); li.append(b); ul.append(li);
+  r.append(el("div", "label", up(T("worldOf", m.n))), el("h3", null, up(m.L.land)), el("div", "sub", m.L.name));
+  if (!m.open) {
+    r.append(el("div", "label", up(T("willLearn"))));
+    const ul = el("ul", "topic-list");
+    m.stops.forEach((s) => { const li = el("li"); li.append(drawIcon(el("canvas"), s.icon), el("span", null, s.short)); ul.append(li); });
+    r.append(ul, el("div", "coming", T("locked", m.L.build)));
+    return;
   }
+  const ul = el("ul", "region-list");
+  m.stops.forEach((s, i) => {
+    const head = el("li", "lesson-head"); head.append(drawIcon(el("canvas"), s.icon), el("span", null, up(`${m.n}-${i + 1} · ${s.short}`))); ul.append(head);
+    for (const ex of s.exs) {
+      const li = el("li"); const b = el("button", "lesson-btn" + (ex.passed ? " done" : "") + (ex.build ? " boss" : ""));
+      b.append(el("span", "dot"), el("span", null, (ex.build ? T("boss") + " · " : "") + ex.title));
+      b.onclick = () => openExercise(ex.id); li.append(b); ul.append(li);
+    }
+  });
   r.append(ul);
   const next = m.exs.find((e) => !e.passed);
-  if (next) { const go = el("button", "btn", next === m.exs[0] ? "▶ ENTER LAND" : "▶ CONTINUE"); go.addEventListener("click", () => openExercise(next.id)); r.append(go); }
+  const go = el("button", "btn", up(next ? (next === m.exs[0] ? T("enter") : T("cont")) : T("replay")));
+  go.onclick = () => openExercise((next || m.exs[0]).id); r.append(go);
 }
-async function refresh() { G = await api("/api/state"); renderHud(); }
+async function refresh() { G = await api("/api/state"); LANG = G.config.language === "en" ? "en" : "es"; applyI18n(); renderHud(); }
+$("prevWorld").onclick = () => { if (selectedModule > 0) { selectedModule--; renderWorld(); } };
+$("nextWorld").onclick = () => { if (selectedModule < G.modules.length - 1) { selectedModule++; renderWorld(); } };
 
 /* ================= Lesson ================= */
 async function openExercise(id) {
   current = await api("/api/exercise/" + id);
   const mod = G.modules.find((m) => m.id === current.module);
-  $("crumb").textContent = `${mod ? mod.land.toUpperCase() : ""} · ${current.id}`;
-  $("exTitle").textContent = (current.build ? "BOSS · " : "") + current.title + (current.passed ? " ✓" : "");
+  $("crumb").textContent = `${mod ? up(loc(mod).land) : ""} · ${current.id}`;
+  $("exTitle").textContent = up((current.build ? T("boss") + " · " : "") + current.title) + (current.passed ? " ✓" : "");
   md($("notes"), current.lessonNotes);
   const t = $("task"); t.textContent = ""; current.task.forEach((x) => t.append(el("li", null, x)));
   $("code").value = current.code; $("fileName").textContent = current.file;
   $("inputsWrap").hidden = !current.needsInput;
-  setConsole([["dim", "Write your code, press ▶ RUN to try it, then ⚔ CHECK to face the tests."]]);
+  setConsole([["dim", T("consoleStart")]]);
   lastError = ""; chat = []; $("chat").textContent = "";
-  say("pip", G.config.language === "es"
-    ? `¡Vamos, ${G.config.name}! Lee la lección de la izquierda y luego escribe tu código. Si te atascas, pregúntame.`
-    : `Let's go, ${G.config.name}! Read the lesson on the left, then write your code. If you get stuck, ask me.`);
+  say("pip", T("pipHello", G.config.name));
   show("screenLesson");
 }
 function setConsole(parts) { const c = $("console"); c.textContent = ""; for (const [cls, t] of parts) c.append(el("span", cls, t)); }
 function busy(on) { for (const id of ["runBtn", "checkBtn", "hintBtn"]) $(id).disabled = on; }
 $("runBtn").onclick = async () => {
-  busy(true); setConsole([["dim", "Running…"]]);
+  busy(true); setConsole([["dim", T("running")]]);
   const inputs = $("inputs").value.split(",").map((s) => s.trim()).filter((s, i, a) => s || i < a.length - 1);
   const r = await api("/api/run", { id: current.id, code: $("code").value, inputs });
   const parts = [];
   if (r.stdout) parts.push(["", r.stdout]);
-  if (r.timeout) parts.push(["err", "\nYour program ran too long. Is there a loop that never stops?"]);
+  if (r.timeout) parts.push(["err", T("tooLong")]);
   if (r.explain) { parts.push(["err", "\n" + r.explain]); lastError = r.stderr.slice(-1500); } else lastError = "";
-  if (!r.stdout && !r.explain && !r.timeout) parts.push(["dim", "(It ran but printed nothing.)"]);
+  if (!r.stdout && !r.explain && !r.timeout) parts.push(["dim", T("nothing")]);
   setConsole(parts); busy(false);
 };
 $("checkBtn").onclick = async () => {
-  busy(true); setConsole([["dim", "Facing the tests…"]]);
+  busy(true); setConsole([["dim", T("facing")]]);
   const r = await api("/api/check", { id: current.id, code: $("code").value });
-  setConsole(r.report.split("\n").filter((l, i, a) => l.trim() || (a[i - 1] || "").trim()).map((l) => [/✗|Not yet/.test(l) ? "err" : /✓|PASSED/.test(l) ? "ok" : /XP|LEVEL/.test(l) ? "xp" : "", l + "\n"]));
+  setConsole(r.report.split("\n").filter((l, i, a) => l.trim() || (a[i - 1] || "").trim()).map((l) => [/✗|Not yet|Todavía/.test(l) ? "err" : /✓|PASSED|SUPERADO/.test(l) ? "ok" : /XP|LEVEL|NIVEL/.test(l) ? "xp" : "", l + "\n"]));
   busy(false);
   let delay = 0;
-  for (const e of r.events) { setTimeout(() => floatText(e.levelUp ? `LEVEL UP! ${e.levelUp.toUpperCase()}` : `+${e.xp} XP`), delay); delay += 900; }
+  for (const e of r.events) { setTimeout(() => floatText(e.levelUp ? T("levelUp", e.levelUp.toUpperCase()) : `+${e.xp} XP`), delay); delay += 900; }
   await refresh();
-  if (r.passed) { current.passed = true; $("exTitle").textContent = (current.build ? "BOSS · " : "") + current.title + " ✓"; }
+  if (r.passed) { current.passed = true; $("exTitle").textContent = up((current.build ? T("boss") + " · " : "") + current.title) + " ✓"; }
 };
 $("hintBtn").onclick = async () => { const r = await api("/api/hint", { id: current.id }); setConsole([["xp", r.text.trim()]]); };
 $("code").addEventListener("keydown", (e) => {
@@ -540,7 +778,7 @@ const toMap = () => { show("screenWorld"); renderWorld(); };
 $("backBtn").onclick = toMap; $("mapBtn").onclick = toMap;
 
 /* ================= Pip ================= */
-function say(who, text) { const d = el("div", "say " + who); who === "me" ? (d.textContent = text) : md(d, text); $("chat").append(d); $("chat").scrollTop = 1e9; return d; }
+function say(who, text) { const d = el("div", "say " + who); d.dataset.who = who === "me" ? up(T("you")) : "PIP"; who === "me" ? (d.textContent = text) : md(d, text); $("chat").append(d); $("chat").scrollTop = 1e9; return d; }
 async function ask(text) {
   if (!text.trim() || !current) return;
   say("me", text);
@@ -553,31 +791,35 @@ async function ask(text) {
 }
 $("sendBtn").onclick = () => { const v = $("ask").value; $("ask").value = ""; ask(v); };
 $("ask").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("sendBtn").click(); } });
-document.querySelectorAll(".q").forEach((b) => b.addEventListener("click", () => ask(b.dataset.q)));
+document.querySelectorAll(".q").forEach((b) => b.addEventListener("click", () => ask(T(b.dataset.q))));
 
 /* ================= Title screen ================= */
-let pickedColor = "blue";
+let pickedColor = "blue", typing = null;
 function typeText(node, text) {
-  node.textContent = ""; let i = 0;
+  clearInterval(typing); node.classList.add("typing"); node.textContent = ""; let i = 0;
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { node.textContent = text; node.classList.remove("typing"); return; }
-  const t = setInterval(() => { node.textContent = text.slice(0, ++i); if (i >= text.length) { clearInterval(t); node.classList.remove("typing"); } }, 26);
+  typing = setInterval(() => { node.textContent = text.slice(0, ++i); if (i >= text.length) { clearInterval(typing); node.classList.remove("typing"); } }, 26);
+}
+function paintStart() {
+  applyI18n();
+  document.querySelectorAll("#startLangs button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  const sw = $("swatches"); sw.textContent = "";
+  for (const [name, hex] of Object.entries(COLORS)) {
+    const b = el("button", "sw"); b.type = "button"; b.style.background = hex; b.dataset.c = name; b.setAttribute("aria-label", T("colors")[name]);
+    b.setAttribute("aria-pressed", String(name === pickedColor));
+    b.onclick = () => { pickedColor = name; paintStart(); }; sw.append(b);
+  }
+  drawHero($("startHero"), 1, pickedColor);
 }
 function startScreen() {
-  show("screenStart");
-  typeText($("introText"), "PIP: Hola, traveler! I'm Pip, a Python snake. Twelve lands lie between you and the title of Python Master. Before we begin… what is your name?");
-  const sw = $("swatches"); sw.textContent = "";
-  const paint = () => { [...sw.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.c === pickedColor))); drawHero($("startHero"), 1, pickedColor); };
-  for (const [name, hex] of Object.entries(COLORS)) {
-    const b = el("button", "sw"); b.type = "button"; b.style.background = hex; b.dataset.c = name; b.setAttribute("aria-label", name);
-    b.onclick = () => { pickedColor = name; paint(); }; sw.append(b);
-  }
-  paint(); $("heroName").focus();
+  show("screenStart"); paintStart(); typeText($("introText"), T("intro")); $("heroName").focus();
 }
+document.querySelectorAll("#startLangs button").forEach((b) => b.addEventListener("click", () => { LANG = b.dataset.lang; paintStart(); typeText($("introText"), T("intro")); }));
 $("nameForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = $("heroName").value.trim(); if (!name) return;
-  await api("/api/config", { name, hero_color: pickedColor, language: $("startLang").value });
-  await refresh(); floatText(`WELCOME, ${name.toUpperCase()}!`);
+  await api("/api/config", { name, hero_color: pickedColor, language: LANG });
+  await refresh(); floatText(T("welcome", name.toUpperCase()));
   toMap();
 });
 
@@ -586,23 +828,29 @@ $("settingsBtn").onclick = () => {
   const c = G.config;
   const sel = $("sModel"); sel.textContent = "";
   for (const m of G.models) { const o = el("option", null, m.label); o.value = m.id; sel.append(o); }
-  $("sName").value = c.name; $("sLang").value = c.language; $("sColor").value = c.hero_color; $("sGoal").value = c.daily_goal; sel.value = c.claude_model || "";
-  $("claudeHelp").textContent = G.claude ? "✓ Claude Code found. Pip uses your Claude account." : "Claude Code isn't installed. In your terminal: npm install -g @anthropic-ai/claude-code, then run claude once to sign in.";
+  const col = $("sColor"); col.textContent = "";
+  for (const name of Object.keys(COLORS)) { const o = el("option", null, T("colors")[name]); o.value = name; col.append(o); }
+  $("sName").value = c.name; $("sLang").value = c.language; col.value = c.hero_color; $("sGoal").value = c.daily_goal; sel.value = c.claude_model || "";
+  $("claudeHelp").textContent = G.claude ? T("claudeOk") : T("claudeMissing");
   $("settings").showModal();
 };
 $("settingsForm").addEventListener("submit", async (e) => {
   if (e.submitter && e.submitter.value === "save") {
     await api("/api/config", { name: $("sName").value.trim() || G.config.name, language: $("sLang").value, hero_color: $("sColor").value,
       daily_goal: Math.max(1, Math.min(20, parseInt($("sGoal").value, 10) || 3)), claude_model: $("sModel").value });
-    await refresh(); if (!$("screenWorld").hidden) renderWorld();
+    await refresh();
+    if (!$("screenWorld").hidden) renderWorld();
+    if (!$("screenLesson").hidden && current) openExercise(current.id);
   }
 });
 let resizeT; window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (!$("screenWorld").hidden) renderWorld(); }, 120); });
-if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => { if (!$("screenWorld").hidden && mapMods) { waveT = (waveT + 1) % 23; drawWorld(mapMods); } }, 700);
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => {
+  if (!$("screenWorld").hidden && mapState) { cloudT += 1; drawWorldMap(mapState.m, mapState.pts, mapState.hereIdx < 0 ? (mapState.m.done ? mapState.pts.length : 0) : mapState.hereIdx); }
+}, 500);
 
 (async () => {
   await refresh();
-  if (!G.configured) { startScreen(); return; }
+  if (!G.configured) { LANG = "es"; startScreen(); return; }
   const mods = modulesWithStatus(); selectedModule = Math.max(0, mods.findIndex((m) => m.open && !m.done));
   toMap();
 })();

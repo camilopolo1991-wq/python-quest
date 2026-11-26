@@ -1,0 +1,2 @@
+bolsa = ["mango", "lulo", "banano"]
+

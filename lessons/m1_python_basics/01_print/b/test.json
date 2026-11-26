@@ -1,22 +1,44 @@
 {
   "id": "m1-01b",
-  "title": "Pixel rocket",
-  "task": [
-    "Print this rocket, one print() per line:",
-    "  /\\",
-    " |  |",
-    " |  |",
-    "/____\\"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "You need 4 print() lines.",
-    "A backslash inside quotes must be written twice: \"/\\\\\" prints /\\"
-  ],
-  "tests": [
-    {
-      "label": "The rocket looks right",
-      "exact": "  /\\\n |  |\n |  |\n/____\\"
-    }
-  ]
+  "en": {
+    "title": "Pixel rocket",
+    "task": [
+      "Print this rocket, one print() per line:",
+      "  /\\",
+      " |  |",
+      " |  |",
+      "/____\\"
+    ],
+    "hints": [
+      "You need 4 print() lines.",
+      "A backslash inside quotes must be written twice: \"/\\\\\" prints /\\"
+    ],
+    "tests": [
+      {
+        "label": "The rocket looks right",
+        "exact": "  /\\\n |  |\n |  |\n/____\\"
+      }
+    ]
+  },
+  "es": {
+    "title": "Cohete pixelado",
+    "task": [
+      "Imprime este cohete, un print() por línea:",
+      "  /\\",
+      " |  |",
+      " |  |",
+      "/____\\"
+    ],
+    "hints": [
+      "Necesitas 4 líneas con print().",
+      "Una barra \\ dentro de comillas se escribe doble: \"/\\\\\" imprime /\\"
+    ],
+    "tests": [
+      {
+        "label": "El cohete se ve bien",
+        "exact": "  /\\\n |  |\n |  |\n/____\\"
+      }
+    ]
+  }
 }

@@ -1,35 +1,70 @@
 {
   "id": "m1-05b",
-  "title": "Calculator",
-  "task": [
-    "Ask for two decimal numbers.",
-    "Print their sum like: Sum: 6.5"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Run it first. What does 2.5 + 4 print? Why?",
-    "input() gives text. Wrap it with float( ) to make a number."
-  ],
-  "tests": [
-    {
-      "label": "2.5 + 4 → Sum: 6.5",
-      "inputs": [
-        "2.5",
-        "4"
-      ],
-      "contains": [
-        "Sum: 6.5"
-      ]
-    },
-    {
-      "label": "10 + 0.25 → Sum: 10.25",
-      "inputs": [
-        "10",
-        "0.25"
-      ],
-      "contains": [
-        "Sum: 10.25"
-      ]
-    }
-  ]
+  "en": {
+    "title": "Calculator",
+    "task": [
+      "Ask for two decimal numbers.",
+      "Print their sum like: Sum: 6.5"
+    ],
+    "hints": [
+      "Run it first. What does 2.5 + 4 print? Why?",
+      "input() gives text. Wrap it with float( ) to make a number."
+    ],
+    "tests": [
+      {
+        "label": "2.5 + 4 → Sum: 6.5",
+        "inputs": [
+          "2.5",
+          "4"
+        ],
+        "contains": [
+          "Sum: 6.5"
+        ]
+      },
+      {
+        "label": "10 + 0.25 → Sum: 10.25",
+        "inputs": [
+          "10",
+          "0.25"
+        ],
+        "contains": [
+          "Sum: 10.25"
+        ]
+      }
+    ]
+  },
+  "es": {
+    "title": "Calculadora",
+    "task": [
+      "Pide dos números decimales.",
+      "Imprime la suma así: Suma: 6.5"
+    ],
+    "hints": [
+      "Córrelo primero. ¿Qué imprime 2.5 + 4? ¿Por qué?",
+      "input() da texto. Envuélvelo con float( ) para volverlo número."
+    ],
+    "tests": [
+      {
+        "label": "2.5 + 4 → Suma: 6.5",
+        "inputs": [
+          "2.5",
+          "4"
+        ],
+        "contains": [
+          "Suma: 6.5"
+        ]
+      },
+      {
+        "label": "10 + 0.25 → Suma: 10.25",
+        "inputs": [
+          "10",
+          "0.25"
+        ],
+        "contains": [
+          "Suma: 10.25"
+        ]
+      }
+    ]
+  }
 }

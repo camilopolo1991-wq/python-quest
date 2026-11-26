@@ -1,40 +1,80 @@
 {
   "id": "m1-08a",
-  "title": "Secret door",
-  "task": [
-    "Keep asking Password: until the user types python.",
-    "Each wrong try prints Wrong!",
-    "When it's right, print Access granted"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "while password != \"python\":",
-    "Ask again inside the loop, or it never ends."
-  ],
-  "tests": [
-    {
-      "label": "Right first time",
-      "inputs": [
-        "python"
-      ],
-      "contains": [
-        "Access granted"
-      ],
-      "not_contains": [
-        "Wrong"
-      ]
-    },
-    {
-      "label": "Two wrong tries, then right",
-      "inputs": [
-        "java",
-        "hola",
-        "python"
-      ],
-      "contains": [
-        "Wrong!",
-        "Access granted"
-      ]
-    }
-  ]
+  "en": {
+    "title": "Secret door",
+    "task": [
+      "Keep asking Password: until the user types python.",
+      "Each wrong try prints Wrong!",
+      "When it's right, print Access granted"
+    ],
+    "hints": [
+      "while password != \"python\":",
+      "Ask again inside the loop, or it never ends."
+    ],
+    "tests": [
+      {
+        "label": "Right first time",
+        "inputs": [
+          "python"
+        ],
+        "contains": [
+          "Access granted"
+        ],
+        "not_contains": [
+          "Wrong"
+        ]
+      },
+      {
+        "label": "Two wrong tries, then right",
+        "inputs": [
+          "java",
+          "hello",
+          "python"
+        ],
+        "contains": [
+          "Wrong!",
+          "Access granted"
+        ]
+      }
+    ]
+  },
+  "es": {
+    "title": "Puerta secreta",
+    "task": [
+      "Pide Clave: hasta que el usuario escriba python.",
+      "Cada intento malo imprime ¡Incorrecta!",
+      "Cuando acierte, imprime Acceso concedido"
+    ],
+    "hints": [
+      "while clave != \"python\":",
+      "Vuelve a preguntar dentro del ciclo, o nunca termina."
+    ],
+    "tests": [
+      {
+        "label": "Acierta a la primera",
+        "inputs": [
+          "python"
+        ],
+        "contains": [
+          "Acceso concedido"
+        ],
+        "not_contains": [
+          "Incorrecta"
+        ]
+      },
+      {
+        "label": "Dos intentos malos y luego bien",
+        "inputs": [
+          "java",
+          "hola",
+          "python"
+        ],
+        "contains": [
+          "¡Incorrecta!",
+          "Acceso concedido"
+        ]
+      }
+    ]
+  }
 }

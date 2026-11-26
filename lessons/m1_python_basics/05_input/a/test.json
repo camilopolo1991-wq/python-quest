@@ -1,33 +1,66 @@
 {
   "id": "m1-05a",
-  "title": "Greeter",
-  "task": [
-    "Ask: What's your name?",
-    "Then print: Hola, <name>!"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "name = input(\"What's your name? \")",
-    "Then use an f-string with {name}."
-  ],
-  "tests": [
-    {
-      "label": "Camilo → Hola, Camilo!",
-      "inputs": [
-        "Camilo"
-      ],
-      "contains": [
-        "Hola, Camilo!"
-      ]
-    },
-    {
-      "label": "Ana → Hola, Ana!",
-      "inputs": [
-        "Ana"
-      ],
-      "contains": [
-        "Hola, Ana!"
-      ]
-    }
-  ]
+  "en": {
+    "title": "Greeter",
+    "task": [
+      "Ask: What's your name?",
+      "Then print: Hello, <name>!"
+    ],
+    "hints": [
+      "name = input(\"What's your name? \")",
+      "Then use an f-string with {name}."
+    ],
+    "tests": [
+      {
+        "label": "Camilo → Hello, Camilo!",
+        "inputs": [
+          "Camilo"
+        ],
+        "contains": [
+          "Hello, Camilo!"
+        ]
+      },
+      {
+        "label": "Ana → Hello, Ana!",
+        "inputs": [
+          "Ana"
+        ],
+        "contains": [
+          "Hello, Ana!"
+        ]
+      }
+    ]
+  },
+  "es": {
+    "title": "Saludador",
+    "task": [
+      "Pregunta: ¿Cómo te llamas?",
+      "Luego imprime: ¡Hola, <nombre>!"
+    ],
+    "hints": [
+      "nombre = input(\"¿Cómo te llamas? \")",
+      "Luego usa un f-string con {nombre}."
+    ],
+    "tests": [
+      {
+        "label": "Camilo → ¡Hola, Camilo!",
+        "inputs": [
+          "Camilo"
+        ],
+        "contains": [
+          "¡Hola, Camilo!"
+        ]
+      },
+      {
+        "label": "Ana → ¡Hola, Ana!",
+        "inputs": [
+          "Ana"
+        ],
+        "contains": [
+          "¡Hola, Ana!"
+        ]
+      }
+    ]
+  }
 }

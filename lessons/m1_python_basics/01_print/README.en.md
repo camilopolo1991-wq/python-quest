@@ -3,7 +3,7 @@
 `print()` shows text on the screen. Text goes inside quotes.
 
 ```python
-print("Hola, mundo!")
+print("Hello, world!")
 print("I'm learning Python")
 ```
 
@@ -13,4 +13,4 @@ Each `print()` starts a new line. You can print numbers without quotes:
 print(2026)
 ```
 
-**Common mistake:** forgetting the quotes. `print(Hola)` gives a `NameError`, because Python thinks `Hola` is a variable name.
+**Common mistake:** forgetting the quotes. `print(Hello)` gives a `NameError`, because Python thinks `Hello` is a variable name.

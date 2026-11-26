@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-quest.py - the Python Quest game in your terminal.
+quest.py - the Python Quest game in your terminal. / el juego Python Quest en tu terminal.
 
 Run it from the repo folder:
 
-    python quest.py            show your hero, XP, streak and next exercise
-    python quest.py next       show the instructions for your next exercise
-    python quest.py check      test your current exercise (or: check m1-03a)
-    python quest.py hint       get the next hint (hints are free)
-    python quest.py solution   show the solution (you get no XP for that exercise)
-    python quest.py list       see the whole map
-    python quest.py setup      personalize: your name, language, hero color, daily goal
-    python quest.py web        open the game in your browser (with Claude Code as your tutor)
-    python quest.py verify     (for maintainers) prove every solution passes its tests
+    python3 quest.py            your hero, XP, streak and next exercise
+    python3 quest.py next       instructions for your next exercise
+    python3 quest.py check      test your current exercise (or: check m1-03a)
+    python3 quest.py hint       get the next hint (hints are free)
+    python3 quest.py solution   show the solution (you get no XP for that exercise)
+    python3 quest.py list       see the whole map
+    python3 quest.py setup      personalize: name, language (en/es), hero color, daily goal, Pip's model
+    python3 quest.py web        open the game in your browser (with Claude Code as your tutor)
+    python3 quest.py verify     (for maintainers) prove every solution passes, in every language
 
 Only the Python standard library is used, so there is nothing to install.
 """
@@ -30,6 +30,7 @@ LESSONS = ROOT / "lessons"
 SAVE_DIR = ROOT / ".quest"
 SAVE_FILE = SAVE_DIR / "progress.json"
 CONFIG_FILE = SAVE_DIR / "config.json"
+LANGS = ("en", "es")
 EVENTS: list[dict] = []   # XP events from the last action (the web view reads these)
 
 # ---------------------------------------------------------------- game rules
@@ -39,8 +40,122 @@ XP_LESSON = 50         # every exercise in a lesson passed
 XP_BUILD = 150         # a Build project passed
 XP_STREAK = 20         # each extra day in a row
 # 60 levels, a new rank every 5 levels. Level 60 is Python Master.
-RANKS = ["Curious", "Apprentice", "Coder", "Builder", "Debugger", "Scripter",
-         "Hacker", "Engineer", "Architect", "Wizard", "Sage", "Python Master"]
+RANKS_BY_LANG = {
+    "en": ["Curious", "Apprentice", "Coder", "Builder", "Debugger", "Scripter",
+           "Hacker", "Engineer", "Architect", "Wizard", "Sage", "Python Master"],
+    "es": ["Curioso", "Aprendiz", "Programador", "Constructor", "Depurador", "Automatizador",
+           "Hacker", "Ingeniero", "Arquitecto", "Mago", "Sabio", "Maestro Python"],
+}
+RANKS = RANKS_BY_LANG["en"]
+
+# ---------------------------------------------------------------- every message, in both languages
+MSG = {
+    "en": {
+        "setup_intro": "\n  Let's make this game yours. Press Enter to keep the value in [brackets].\n",
+        "ask_name": "Your name", "ask_lang": "Language", "ask_color": "Hero color",
+        "ask_goal": "Exercises per day goal", "ask_model": "Claude model for Pip",
+        "models": "  Models for Pip: ", "model_default": "(empty = your Claude Code default)",
+        "saved": "\n  Saved. Welcome, {name}! Run: python3 quest.py web\n",
+        "welcome_first": "\n  Welcome to Python Quest! First, tell me about you.",
+        "no_exercise": "No exercise called {id}. Try: python3 quest.py list",
+        "level": "Level", "streak": "Streak", "days": "day(s)", "best": "best",
+        "exercises": "Exercises", "xp_to": "XP to", "max": "MAX",
+        "next": "Next", "open": "Open", "then": "Then",
+        "all_done": "  You finished every exercise here. Time for a personal project!",
+        "lesson_notes": "Lesson notes", "edit": "Edit", "run": "Run", "check": "Check",
+        "checking": "\n  Checking {id} · {title}\n",
+        "not_yet": "  Not yet. Fix one ✗ at a time, run your file to see what it prints, then check again.",
+        "stuck": "  Stuck? python3 quest.py hint",
+        "still": "  Still passing. You already got the XP for this one.\n",
+        "passed": "  ★ PASSED ★",
+        "streak_day": "Streak day {n}",
+        "no_xp_solution": "  No XP: you looked at the solution. That's okay, try the next one on your own.",
+        "xp_build": "Build: {title}", "xp_ex": "Exercise: {title}", "xp_fix": "You fixed your own error",
+        "xp_lesson": "Lesson complete: {title}",
+        "next_up": "\n  Next up: {id} {title}  →  python3 quest.py next\n",
+        "no_hints": "  No hints for this one. Read the lesson notes again, or ask Pip in the game page.",
+        "hint": "Hint", "hint_more": "\n  Run hint again for a bigger hint.",
+        "sol_warn": "\n  Seeing the solution means no XP for this exercise.",
+        "sol_sure": "  If you're sure, run: python3 quest.py solution {id} --yes\n",
+        "level_up": "\n  ★ LEVEL UP! You are now level {n}: {name} ★\n",
+        "too_long": "Your program ran too long. Is there a loop that never stops?",
+        "expected_got": "Expected {exp}, got {got}", "nothing": "(nothing)",
+        "should_include": "Your output should include: {p!r}",
+        "should_not": "Your output should NOT include: {p!r}",
+        "no_match": "Output doesn't match exactly.", "expected": "Expected", "got": "Got",
+        "should_use": "Your code should use {p!r}",
+        "what_means": "What this means:", "line": "line",
+        "read_last": "Read the last line of the error: it names the problem.",
+        "build_tag": " BUILD",
+    },
+    "es": {
+        "setup_intro": "\n  Hagamos este juego tuyo. Presiona Enter para dejar el valor entre [corchetes].\n",
+        "ask_name": "Tu nombre", "ask_lang": "Idioma", "ask_color": "Color del héroe",
+        "ask_goal": "Meta de ejercicios por día", "ask_model": "Modelo de Claude para Pip",
+        "models": "  Modelos para Pip: ", "model_default": "(vacío = el de tu Claude Code)",
+        "saved": "\n  Guardado. ¡Bienvenido, {name}! Ejecuta: python3 quest.py web\n",
+        "welcome_first": "\n  ¡Bienvenido a Python Quest! Primero, cuéntame de ti.",
+        "no_exercise": "No hay un ejercicio llamado {id}. Prueba: python3 quest.py list",
+        "level": "Nivel", "streak": "Racha", "days": "día(s)", "best": "mejor",
+        "exercises": "Ejercicios", "xp_to": "XP para", "max": "MÁX",
+        "next": "Sigue", "open": "Abre", "then": "Luego",
+        "all_done": "  Terminaste todos los ejercicios. ¡Hora de un proyecto propio!",
+        "lesson_notes": "Notas de la lección", "edit": "Edita", "run": "Corre", "check": "Revisa",
+        "checking": "\n  Revisando {id} · {title}\n",
+        "not_yet": "  Todavía no. Arregla un ✗ a la vez, corre tu archivo para ver qué imprime y vuelve a revisar.",
+        "stuck": "  ¿Atascado? python3 quest.py hint",
+        "still": "  Sigue pasando. Ya ganaste los XP de este.\n",
+        "passed": "  ★ ¡SUPERADO! ★",
+        "streak_day": "Racha día {n}",
+        "no_xp_solution": "  Sin XP: viste la solución. Tranquilo, intenta el siguiente por tu cuenta.",
+        "xp_build": "Proyecto: {title}", "xp_ex": "Ejercicio: {title}", "xp_fix": "Arreglaste tu propio error",
+        "xp_lesson": "Lección completa: {title}",
+        "next_up": "\n  Sigue: {id} {title}  →  python3 quest.py next\n",
+        "no_hints": "  Este no tiene pistas. Relee las notas de la lección o pregúntale a Pip en la página del juego.",
+        "hint": "Pista", "hint_more": "\n  Vuelve a pedir hint para una pista más grande.",
+        "sol_warn": "\n  Ver la solución significa cero XP en este ejercicio.",
+        "sol_sure": "  Si estás seguro, ejecuta: python3 quest.py solution {id} --yes\n",
+        "level_up": "\n  ★ ¡SUBISTE DE NIVEL! Ahora eres nivel {n}: {name} ★\n",
+        "too_long": "Tu programa tardó demasiado. ¿Hay un ciclo que nunca termina?",
+        "expected_got": "Se esperaba {exp}, salió {got}", "nothing": "(nada)",
+        "should_include": "Tu salida debe incluir: {p!r}",
+        "should_not": "Tu salida NO debe incluir: {p!r}",
+        "no_match": "La salida no coincide exactamente.", "expected": "Se esperaba", "got": "Salió",
+        "should_use": "Tu código debe usar {p!r}",
+        "what_means": "Qué significa:", "line": "línea",
+        "read_last": "Lee la última línea del error: ahí dice cuál es el problema.",
+        "build_tag": " PROYECTO",
+    },
+}
+
+FRIENDLY = {
+    "en": {
+        "NameError": "Python doesn't know that name. Check the spelling, or create the variable first. Text needs quotes.",
+        "SyntaxError": "Python couldn't read a line. Look for a missing colon :, a bracket ( ) or a quote mark.",
+        "IndentationError": "The spaces at the start of a line are off. Lines inside if, for, while or def need 4 spaces.",
+        "TypeError": "You mixed things that don't fit, like text + a number. Try str(), int() or float().",
+        "ValueError": "A value has the wrong shape, like int('hello').",
+        "ZeroDivisionError": "You divided by zero.",
+        "EOFError": "Your program asked input() more times than the test gives answers.",
+        "IndexError": "That list position doesn't exist. Lists start counting at 0.",
+        "KeyError": "That key isn't in the dictionary.",
+        "AttributeError": "That kind of value doesn't have this method. Check the spelling after the dot.",
+        "FileNotFoundError": "Python can't find that file. Check the name and the folder.",
+    },
+    "es": {
+        "NameError": "Python no conoce ese nombre. Revisa cómo lo escribiste o crea la variable primero. El texto va entre comillas.",
+        "SyntaxError": "Python no pudo leer una línea. Busca dos puntos :, un paréntesis ( ) o una comilla que falte.",
+        "IndentationError": "Los espacios al inicio de una línea están mal. Lo que va dentro de if, for, while o def lleva 4 espacios.",
+        "TypeError": "Mezclaste cosas que no encajan, como texto + número. Prueba str(), int() o float().",
+        "ValueError": "Un valor tiene la forma equivocada, como int('hola').",
+        "ZeroDivisionError": "Dividiste entre cero.",
+        "EOFError": "Tu programa pidió input() más veces de las respuestas que da la prueba.",
+        "IndexError": "Esa posición de la lista no existe. Las listas empiezan a contar en 0.",
+        "KeyError": "Esa llave no está en el diccionario.",
+        "AttributeError": "Ese tipo de valor no tiene ese método. Revisa lo que escribiste después del punto.",
+        "FileNotFoundError": "Python no encuentra ese archivo. Revisa el nombre y la carpeta.",
+    },
+}
 
 
 def xp_for_level(n: int) -> int:
@@ -48,8 +163,12 @@ def xp_for_level(n: int) -> int:
     return int(round(40 * (n - 1) ** 1.5 / 10.0)) * 10
 
 
-LEVELS = [(n, f"{RANKS[min((n - 1) // 5, len(RANKS) - 1)]}" + (f" {(n - 1) % 5 + 1}" if n < 60 else ""), xp_for_level(n))
-          for n in range(1, 61)]
+def level_name(n: int, lang: str | None = None) -> str:
+    ranks = RANKS_BY_LANG.get(lang or current_lang(), RANKS)
+    return ranks[min((n - 1) // 5, len(ranks) - 1)] + (f" {(n - 1) % 5 + 1}" if n < 60 else "")
+
+
+LEVEL_XP = [(n, xp_for_level(n)) for n in range(1, 61)]
 
 USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
 if os.name == "nt":
@@ -63,16 +182,96 @@ def c(text: str, code: str) -> str:
 GOLD, TEAL, CORAL, BLUE, DIM, BOLD = "93", "96", "91", "94", "2", "1"
 
 
+# ---------------------------------------------------------------- settings
+DEFAULT_MODEL = "claude-sonnet-5-5"
+MODELS = [  # (model id for Claude Code, English label, Spanish label). "" = Claude Code's own default.
+    ("claude-sonnet-5-5", "Sonnet 5.5 · balanced (default)", "Sonnet 5.5 · equilibrado (por defecto)"),
+    ("claude-opus-5-5", "Opus 5.5 · smartest, slower", "Opus 5.5 · el más listo, más lento"),
+    ("claude-haiku-5-5", "Haiku 5.5 · fastest", "Haiku 5.5 · el más rápido"),
+    ("claude-fable-5-2", "Fable 5.2", "Fable 5.2"),
+    ("", "My Claude Code default", "El de mi Claude Code"),
+]
+DEFAULT_CONFIG = {"name": "Coder", "language": "en", "hero_color": "blue", "daily_goal": 3,
+                  "claude_model": DEFAULT_MODEL, "config_version": 2}
+
+
+def load_config() -> dict:
+    cfg = dict(DEFAULT_CONFIG)
+    if CONFIG_FILE.exists():
+        saved = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        if saved.get("config_version", 1) < 2:  # older saves had no model picker
+            saved["claude_model"] = DEFAULT_MODEL
+            saved["config_version"] = 2
+        cfg.update(saved)
+    if cfg.get("language") not in LANGS:
+        cfg["language"] = "en"
+    return cfg
+
+
+def current_lang() -> str:
+    return load_config()["language"]
+
+
+def t(key: str, lang: str | None = None, **kw) -> str:
+    text = MSG[lang or current_lang()][key]
+    return text.format(**kw) if kw else text
+
+
+def write_config(cfg: dict) -> None:
+    """Saves settings. If the language changed, untouched exercise files switch language too."""
+    old = load_config()["language"] if CONFIG_FILE.exists() else None
+    SAVE_DIR.mkdir(exist_ok=True)
+    CONFIG_FILE.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
+    if old and old != cfg["language"]:
+        switch_language(old, cfg["language"])
+
+
 # ---------------------------------------------------------------- data
-def load_exercises() -> list[dict]:
-    """Every exercise, in course order. Each lives in lessons/<module>/<lesson>/<exercise>/."""
+def starter_path(ex: dict, lang: str) -> Path:
+    return ex["folder"] / f"starter.{lang}.py"
+
+
+def work_file(ex: dict) -> Path:
+    """The learner's own file (exercise.py or build.py). Made from the starter on first use."""
+    path = ex["folder"] / ex.get("file", "exercise.py")
+    if not path.exists():
+        path.write_text(starter_path(ex, ex["lang"]).read_text(encoding="utf-8"), encoding="utf-8")
+    return path
+
+
+def switch_language(old: str, new: str) -> None:
+    """Swaps starter code to the new language, but never touches code the learner already wrote."""
+    for ex in load_exercises(new):
+        path = ex["folder"] / ex.get("file", "exercise.py")
+        if path.exists() and path.read_text(encoding="utf-8") == starter_path(ex, old).read_text(encoding="utf-8"):
+            path.write_text(starter_path(ex, new).read_text(encoding="utf-8"), encoding="utf-8")
+
+
+def lesson_readme(folder: Path, lang: str) -> Path:
+    return folder / f"README.{lang}.md"
+
+
+def lesson_title(folder: Path, lang: str) -> str:
+    readme = lesson_readme(folder, lang)
+    if readme.exists():
+        first = readme.read_text(encoding="utf-8").splitlines()[0]
+        return first.lstrip("# ").strip()
+    return folder.name
+
+
+def load_exercises(lang: str | None = None) -> list[dict]:
+    """Every exercise, in course order, in one language. Each lives in lessons/<module>/<lesson>/<exercise>/."""
+    lang = lang or current_lang()
     found = []
     for test_file in sorted(LESSONS.glob("*/*/*/test.json")):
         folder = test_file.parent
         spec = json.loads(test_file.read_text(encoding="utf-8"))
+        spec.update(spec.get(lang) or spec.get("en"))
+        spec["lang"] = lang
         spec["folder"] = folder
         spec["module"] = folder.parent.parent.name
         spec["lesson"] = folder.parent.name
+        spec["lesson_title"] = lesson_title(folder.parent, lang)
         found.append(spec)
     return found
 
@@ -90,37 +289,10 @@ def write_save(save: dict) -> None:
     SAVE_FILE.write_text(json.dumps(save, indent=2), encoding="utf-8")
 
 
-DEFAULT_MODEL = "claude-sonnet-5-5"
-MODELS = [  # (model id for Claude Code, label). "" = whatever your Claude Code uses by default.
-    ("claude-sonnet-5-5", "Sonnet 5.5 · balanced (default)"),
-    ("claude-opus-5-5", "Opus 5.5 · smartest, slower"),
-    ("claude-haiku-5-5", "Haiku 5.5 · fastest"),
-    ("claude-fable-5-2", "Fable 5.2"),
-    ("", "My Claude Code default"),
-]
-DEFAULT_CONFIG = {"name": "Coder", "language": "en", "hero_color": "blue", "daily_goal": 3,
-                  "claude_model": DEFAULT_MODEL, "config_version": 2}
-
-
-def load_config() -> dict:
-    cfg = dict(DEFAULT_CONFIG)
-    if CONFIG_FILE.exists():
-        saved = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-        if saved.get("config_version", 1) < 2:  # older saves had no model picker
-            saved["claude_model"] = DEFAULT_MODEL
-            saved["config_version"] = 2
-        cfg.update(saved)
-    return cfg
-
-
-def write_config(cfg: dict) -> None:
-    SAVE_DIR.mkdir(exist_ok=True)
-    CONFIG_FILE.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
-
-
 def cmd_setup() -> None:
     cfg = load_config()
-    print(c("\n  Let's make this game yours. Press Enter to keep the value in [brackets].\n", GOLD))
+    lang = cfg["language"]
+    print(c(t("setup_intro", lang), GOLD))
 
     def ask(label: str, key: str, choices: list[str] | None = None) -> None:
         hint = f" ({'/'.join(choices)})" if choices else ""
@@ -128,29 +300,28 @@ def cmd_setup() -> None:
         if value and (not choices or value in choices):
             cfg[key] = int(value) if isinstance(DEFAULT_CONFIG[key], int) and value.isdigit() else value
 
-    ask("Your name", "name")
-    ask("Tutor language", "language", ["en", "es"])
-    ask("Hero color", "hero_color", ["blue", "red", "green", "purple", "gold"])
-    ask("Exercises per day goal", "daily_goal")
-    print("  Models for Pip: " + ", ".join(m or "(empty = Claude Code default)" for m, _ in MODELS))
-    ask("Claude model for Pip", "claude_model", [m for m, _ in MODELS])
+    ask(t("ask_lang", lang), "language", list(LANGS))
+    lang = cfg["language"]
+    ask(t("ask_name", lang), "name")
+    ask(t("ask_color", lang), "hero_color", ["blue", "red", "green", "purple", "gold"])
+    ask(t("ask_goal", lang), "daily_goal")
+    print(t("models", lang) + ", ".join(m or t("model_default", lang) for m, *_ in MODELS))
+    ask(t("ask_model", lang), "claude_model", [m for m, *_ in MODELS])
     write_config(cfg)
-    print(c(f"\n  Saved. Welcome, {cfg['name']}! Run: python quest.py web\n", TEAL))
+    print(c(t("saved", lang, name=cfg["name"]), TEAL))
 
 
 def level_for(xp: int) -> tuple[int, str, int]:
-    current = LEVELS[0]
-    for lv in LEVELS:
-        if xp >= lv[2]:
+    current = LEVEL_XP[0]
+    for lv in LEVEL_XP:
+        if xp >= lv[1]:
             current = lv
-    return current
+    return current[0], level_name(current[0]), current[1]
 
 
 def next_level(lv: tuple[int, str, int]):
-    for other in LEVELS:
-        if other[0] == lv[0] + 1:
-            return other
-    return None
+    n = lv[0] + 1
+    return (n, level_name(n), xp_for_level(n)) if n <= 60 else None
 
 
 def find(exercises: list[dict], ex_id: str | None, save: dict) -> dict | None:
@@ -158,7 +329,7 @@ def find(exercises: list[dict], ex_id: str | None, save: dict) -> dict | None:
         for ex in exercises:
             if ex["id"] == ex_id:
                 return ex
-        print(c(f"No exercise called {ex_id}. Try: python quest.py list", CORAL))
+        print(c(t("no_exercise", id=ex_id), CORAL))
         return None
     for ex in exercises:
         if ex["id"] not in save["passed"]:
@@ -167,12 +338,15 @@ def find(exercises: list[dict], ex_id: str | None, save: dict) -> dict | None:
 
 
 # ---------------------------------------------------------------- running code
+ENV = {**os.environ, "PYTHONIOENCODING": "utf-8"}  # ¡tildes y eñes! work on every terminal
+
+
 def run_program(path: Path, inputs: list[str], timeout: float = 5.0) -> tuple[str, str, bool]:
     """Runs a student's file. Returns (stdout, stderr, timed_out)."""
     try:
         proc = subprocess.run(
             [sys.executable, path.name], cwd=path.parent, input="\n".join(inputs) + "\n",
-            capture_output=True, text=True, timeout=timeout, encoding="utf-8",
+            capture_output=True, text=True, timeout=timeout, encoding="utf-8", env=ENV,
         )
         return proc.stdout, proc.stderr, False
     except subprocess.TimeoutExpired:
@@ -190,48 +364,35 @@ def call_function(path: Path, expression: str, timeout: float = 5.0) -> tuple[st
     )
     try:
         proc = subprocess.run([sys.executable, "-c", code], cwd=path.parent, capture_output=True,
-                              text=True, timeout=timeout, input="", encoding="utf-8")
+                              text=True, timeout=timeout, input="", encoding="utf-8", env=ENV)
         return proc.stdout.strip(), proc.stderr, False
     except subprocess.TimeoutExpired:
         return "", "", True
 
 
-FRIENDLY = {
-    "NameError": "Python doesn't know that name. Check the spelling, or create the variable first. Text needs quotes.",
-    "SyntaxError": "Python couldn't read a line. Look for a missing colon :, a bracket ( ) or a quote mark.",
-    "IndentationError": "The spaces at the start of a line are off. Lines inside if, for, while or def need 4 spaces.",
-    "TypeError": "You mixed things that don't fit, like text + a number. Try str(), int() or float().",
-    "ValueError": "A value has the wrong shape, like int('hola').",
-    "ZeroDivisionError": "You divided by zero.",
-    "EOFError": "Your program asked input() more times than the test gives answers.",
-    "IndexError": "That list position doesn't exist. Lists start counting at 0.",
-    "KeyError": "That key isn't in the dictionary.",
-    "AttributeError": "That kind of value doesn't have this method. Check the spelling after the dot.",
-    "FileNotFoundError": "Python can't find that file. Check the name and the folder.",
-}
-
-
-def explain_error(stderr: str) -> str:
+def explain_error(stderr: str, lang: str | None = None) -> str:
+    lang = lang or current_lang()
     last = [line for line in stderr.strip().splitlines() if line.strip()]
     if not last:
         return ""
     name = last[-1].split(":")[0].strip()
     line_no = ""
     for line in last:
-        if 'File "' in line and "line " in line and ("exercise.py" in line or "build.py" in line):
+        if 'File "' in line and "line " in line and line.split('"')[1].endswith(".py") and "<" not in line:
             line_no = line.split("line ")[1].split(",")[0]
-    where = f" (line {line_no})" if line_no else ""
-    tip = FRIENDLY.get(name, "Read the last line of the error: it names the problem.")
-    return f"{c(last[-1], CORAL)}{where}\n  {c('What this means:', BOLD)} {tip}"
+    where = f" ({t('line', lang)} {line_no})" if line_no else ""
+    tip = FRIENDLY[lang].get(name, t("read_last", lang))
+    return f"{c(last[-1], CORAL)}{where}\n  {c(t('what_means', lang), BOLD)} {tip}"
 
 
 def normalize(text: str) -> str:
     return "\n".join(line.rstrip() for line in text.strip().splitlines())
 
 
-def run_tests(ex: dict, file_name: str | None = None) -> tuple[bool, list[str]]:
+def run_tests(ex: dict, path: Path | None = None) -> tuple[bool, list[str]]:
     """Runs every test in test.json. Returns (all passed, report lines)."""
-    path = ex["folder"] / (file_name or ex.get("file", "exercise.py"))
+    lang = ex["lang"]
+    path = path or work_file(ex)
     report, ok_all = [], True
     for test in ex["tests"]:
         label = test.get("label", "test")
@@ -241,30 +402,30 @@ def run_tests(ex: dict, file_name: str | None = None) -> tuple[bool, list[str]]:
             out, err, slow = run_program(path, test.get("inputs", []))
         ok, why = True, ""
         if slow:
-            ok, why = False, "Your program ran too long. Is there a loop that never stops?"
+            ok, why = False, t("too_long", lang)
         elif err.strip() and "Traceback" in err:
-            ok, why = False, explain_error(err)
+            ok, why = False, explain_error(err, lang)
         elif "call" in test:
             if out != repr(test["equals"]):
-                ok, why = False, f"Expected {repr(test['equals'])}, got {out or '(nothing)'}"
+                ok, why = False, t("expected_got", lang, exp=repr(test["equals"]), got=out or t("nothing", lang))
         else:
             text = out
             for piece in test.get("contains", []):
                 if piece.lower() not in text.lower():
-                    ok, why = False, f"Your output should include: {piece!r}"
+                    ok, why = False, t("should_include", lang, p=piece)
                     break
             for piece in test.get("not_contains", []):
                 if ok and piece.lower() in text.lower():
-                    ok, why = False, f"Your output should NOT include: {piece!r}"
+                    ok, why = False, t("should_not", lang, p=piece)
             if ok and "exact" in test and normalize(text) != normalize(test["exact"]):
-                ok, why = False, "Output doesn't match exactly.\n  Expected:\n" + \
+                ok, why = False, t("no_match", lang) + f"\n  {t('expected', lang)}:\n" + \
                     "\n".join("    " + s for s in test["exact"].splitlines()) + \
-                    "\n  Got:\n" + "\n".join("    " + s for s in (text.strip().splitlines() or ["(nothing)"]))
+                    f"\n  {t('got', lang)}:\n" + "\n".join("    " + s for s in (text.strip().splitlines() or [t("nothing", lang)]))
             if ok and "source_contains" in test:
                 src = path.read_text(encoding="utf-8")
                 for piece in test["source_contains"]:
                     if piece not in src:
-                        ok, why = False, f"Your code should use {piece!r}"
+                        ok, why = False, t("should_use", lang, p=piece)
                         break
         ok_all &= ok
         mark = c("✓", TEAL) if ok else c("✗", CORAL)
@@ -279,33 +440,33 @@ def today() -> str:
 
 def touch_streak(save: dict) -> int:
     """First pass of the day keeps the streak going. Returns the bonus XP."""
-    t = today()
+    day = today()
     last = save.get("last_day")
-    if last == t:
+    if last == day:
         return 0
     bonus = 0
-    if last and (dt.date.fromisoformat(t) - dt.date.fromisoformat(last)).days == 1:
+    if last and (dt.date.fromisoformat(day) - dt.date.fromisoformat(last)).days == 1:
         save["streak"] += 1
         bonus = XP_STREAK
     else:
         save["streak"] = 1
-    save["last_day"] = t
+    save["last_day"] = day
     save["best_streak"] = max(save.get("best_streak", 0), save["streak"])
     return bonus
 
 
-def give(save: dict, amount: int, what: str) -> None:
+def give(save: dict, amount: int, what: str, kind: str = "other") -> None:
     if amount <= 0:
         return
     before = level_for(save["xp"])
     save["xp"] += amount
-    save["log"] = ([{"day": today(), "xp": amount, "what": what}] + save["log"])[:30]
+    save["log"] = ([{"day": today(), "xp": amount, "what": what, "kind": kind}] + save["log"])[:30]
     print(c(f"  +{amount} XP  {what}", GOLD))
     EVENTS.append({"xp": amount, "what": what})
     after = level_for(save["xp"])
     if after[0] > before[0]:
         EVENTS.append({"levelUp": after[1]})
-        print(c(f"\n  ★ LEVEL UP! You are now level {after[0]}: {after[1].upper()} ★\n", GOLD + ";1"))
+        print(c(t("level_up", n=after[0], name=after[1].upper()), GOLD + ";1"))
 
 
 # ---------------------------------------------------------------- screens
@@ -325,9 +486,13 @@ def bar(xp: int) -> str:
     lv = level_for(xp)
     nx = next_level(lv)
     if not nx:
-        return c("█" * 24, GOLD) + "  MAX"
+        return c("█" * 24, GOLD) + "  " + t("max")
     done = int(24 * (xp - lv[2]) / (nx[2] - lv[2]))
-    return c("█" * done, GOLD) + c("░" * (24 - done), DIM) + f"  {nx[2] - xp} XP to {nx[1]}"
+    return c("█" * done, GOLD) + c("░" * (24 - done), DIM) + f"  {nx[2] - xp} {t('xp_to')} {nx[1]}"
+
+
+def rel(path: Path) -> Path:
+    return path.relative_to(ROOT)
 
 
 def cmd_status(exercises, save) -> None:
@@ -335,11 +500,11 @@ def cmd_status(exercises, save) -> None:
     print()
     side = [
         c("PYTHON QUEST · " + load_config()["name"].upper(), GOLD + ";1"),
-        f"Level {lv[0]} · {c(lv[1].upper(), BLUE + ';1')}",
+        f"{t('level')} {lv[0]} · {c(lv[1].upper(), BLUE + ';1')}",
         f"XP {save['xp']}",
         bar(save["xp"]),
-        f"Streak {c(str(save['streak']) + ' day(s)', CORAL)}  (best {save.get('best_streak', 0)})",
-        f"Exercises {len(save['passed'])}/{len(exercises)}",
+        f"{t('streak')} {c(str(save['streak']) + ' ' + t('days'), CORAL)}  ({t('best')} {save.get('best_streak', 0)})",
+        f"{t('exercises')} {len(save['passed'])}/{len(exercises)}",
         "",
         "",
     ]
@@ -348,11 +513,11 @@ def cmd_status(exercises, save) -> None:
     ex = find(exercises, None, save)
     print()
     if ex:
-        print(f"  Next: {c(ex['id'], GOLD)}  {ex['title']}")
-        print(f"  Open: {ex['folder'].relative_to(ROOT) / ex.get('file', 'exercise.py')}")
-        print(f"  Then: {c('python quest.py check', BOLD)}")
+        print(f"  {t('next')}: {c(ex['id'], GOLD)}  {ex['title']}")
+        print(f"  {t('open')}: {rel(work_file(ex))}")
+        print(f"  {t('then')}: {c('python3 quest.py check', BOLD)}")
     else:
-        print(c("  You finished every exercise here. Time for a personal project!", GOLD))
+        print(c(t("all_done"), GOLD))
     print()
 
 
@@ -360,18 +525,19 @@ def cmd_next(exercises, save, ex_id=None) -> None:
     ex = find(exercises, ex_id, save)
     if not ex:
         return
-    lesson_md = ex["folder"].parent / "README.md"
+    lesson_md = lesson_readme(ex["folder"].parent, ex["lang"])
+    path = work_file(ex)
     print()
     print(c(f"  {ex['id']} · {ex['title']}", GOLD + ";1"))
     if lesson_md.exists():
-        print(c(f"  Lesson notes: {lesson_md.relative_to(ROOT)}", DIM))
+        print(c(f"  {t('lesson_notes')}: {rel(lesson_md)}", DIM))
     print()
     for line in ex["task"]:
         print(f"  • {line}")
     print()
-    print(f"  Edit:  {ex['folder'].relative_to(ROOT) / ex.get('file', 'exercise.py')}")
-    print(f"  Run:   cd {ex['folder'].relative_to(ROOT)} && python {ex.get('file', 'exercise.py')}")
-    print(f"  Check: python quest.py check {ex['id']}")
+    print(f"  {t('edit')}:  {rel(path)}")
+    print(f"  {t('run')}:   cd {rel(ex['folder'])} && python3 {path.name}")
+    print(f"  {t('check')}: python3 quest.py check {ex['id']}")
     print()
 
 
@@ -379,7 +545,7 @@ def cmd_check(exercises, save, ex_id=None) -> None:
     ex = find(exercises, ex_id, save)
     if not ex:
         return
-    print(c(f"\n  Checking {ex['id']} · {ex['title']}\n", BOLD))
+    print(c(t("checking", id=ex["id"], title=ex["title"]), BOLD))
     ok, report = run_tests(ex)
     print("\n".join(report))
     print()
@@ -387,33 +553,35 @@ def cmd_check(exercises, save, ex_id=None) -> None:
         if ex["id"] not in save["failed_once"]:
             save["failed_once"].append(ex["id"])
         write_save(save)
-        print(c("  Not yet. Fix one ✗ at a time, run your file to see what it prints, then check again.", CORAL))
-        print(c("  Stuck? python quest.py hint", DIM))
+        print(c(t("not_yet"), CORAL))
+        print(c(t("stuck"), DIM))
         print()
         return
     first_time = ex["id"] not in save["passed"]
     if not first_time:
-        print(c("  Still passing. You already got the XP for this one.\n", TEAL))
+        print(c(t("still"), TEAL))
         return
     save["passed"].append(ex["id"])
-    print(c("  ★ PASSED ★", TEAL + ";1"))
-    give(save, touch_streak(save), f"Streak day {save['streak']}")
+    print(c(t("passed"), TEAL + ";1"))
+    give(save, touch_streak(save), t("streak_day", n=save["streak"]), "streak")
     if ex["id"] in save["seen_solution"]:
-        print(c("  No XP: you looked at the solution. That's okay, try the next one on your own.", DIM))
+        print(c(t("no_xp_solution"), DIM))
     else:
-        give(save, XP_BUILD if ex.get("build") else XP_EXERCISE, ("Build: " if ex.get("build") else "Exercise: ") + ex["title"])
+        build = ex.get("build")
+        give(save, XP_BUILD if build else XP_EXERCISE,
+             t("xp_build" if build else "xp_ex", title=ex["title"]), "build" if build else "exercise")
         if ex["id"] in save["failed_once"]:
-            give(save, XP_FIX, "You fixed your own error")
+            give(save, XP_FIX, t("xp_fix"), "fix")
     # whole lesson done?
     lesson_key = f"{ex['module']}/{ex['lesson']}"
     siblings = [e["id"] for e in exercises if f"{e['module']}/{e['lesson']}" == lesson_key]
     if lesson_key not in save["lessons_done"] and all(s in save["passed"] for s in siblings) and not ex.get("build"):
         save["lessons_done"].append(lesson_key)
-        give(save, XP_LESSON, f"Lesson complete: {ex['lesson']}")
+        give(save, XP_LESSON, t("xp_lesson", title=ex["lesson_title"]), "lesson")
     write_save(save)
     nxt = find(exercises, None, save)
     if nxt:
-        print(f"\n  Next up: {c(nxt['id'], GOLD)} {nxt['title']}  →  python quest.py next\n")
+        print(t("next_up", id=nxt["id"], title=nxt["title"]))
 
 
 def cmd_hint(exercises, save, ex_id=None) -> None:
@@ -423,16 +591,16 @@ def cmd_hint(exercises, save, ex_id=None) -> None:
     hints = ex.get("hints", [])
     used = save["hints_used"].get(ex["id"], 0)
     if not hints:
-        print("  No hints for this one. Read the lesson notes again, or ask Pip in the game page.")
+        print(t("no_hints"))
         return
     shown = min(used + 1, len(hints))
     save["hints_used"][ex["id"]] = shown
     write_save(save)
     print()
     for i, h in enumerate(hints[:shown], 1):
-        print(f"  {c('Hint ' + str(i), GOLD)}: {h}")
+        print(f"  {c(t('hint') + ' ' + str(i), GOLD)}: {h}")
     if shown < len(hints):
-        print(c("\n  Run hint again for a bigger hint.", DIM))
+        print(c(t("hint_more"), DIM))
     print()
 
 
@@ -441,42 +609,49 @@ def cmd_solution(exercises, save, ex_id=None) -> None:
     if not ex:
         return
     if ex["id"] not in save["seen_solution"] and "--yes" not in sys.argv:
-        print(c("\n  Seeing the solution means no XP for this exercise.", CORAL))
-        print("  If you're sure, run: python quest.py solution " + ex["id"] + " --yes\n")
+        print(c(t("sol_warn"), CORAL))
+        print(t("sol_sure", id=ex["id"]))
         return
     if ex["id"] not in save["seen_solution"]:
         save["seen_solution"].append(ex["id"])
         write_save(save)
-    sol = ex["folder"] / "solution.py"
+    sol = ex["folder"] / f"solution.{ex['lang']}.py"
     print()
     print(sol.read_text(encoding="utf-8"))
 
 
 def cmd_list(exercises, save) -> None:
+    modules = {m["id"]: m for m in json.loads((LESSONS / "modules.json").read_text(encoding="utf-8"))}
+    lang = exercises[0]["lang"] if exercises else current_lang()
     current_module = None
     for ex in exercises:
         if ex["module"] != current_module:
             current_module = ex["module"]
-            print("\n" + c(current_module.upper().replace("_", " "), GOLD + ";1"))
+            m = modules.get(current_module, {})
+            print("\n" + c(str(m.get(lang, {}).get("land", current_module)).upper(), GOLD + ";1"))
         mark = c("✓", TEAL) if ex["id"] in save["passed"] else c("·", DIM)
-        tag = c(" BUILD", BLUE) if ex.get("build") else ""
+        tag = c(t("build_tag"), BLUE) if ex.get("build") else ""
         print(f"  {mark} {ex['id']:8} {ex['title']}{tag}")
     print()
 
 
-def cmd_verify(exercises) -> int:
-    bad = 0
-    for ex in exercises:
-        ok, report = run_tests(ex, "solution.py")
-        print(("PASS " if ok else "FAIL ") + ex["id"])
-        if not ok:
-            bad += 1
-            print("\n".join(report))
-        starter_ok, _ = run_tests(ex)
-        if starter_ok and not ex.get("starter_may_pass"):
-            bad += 1
-            print("  starter already passes:", ex["id"])
-    print(f"\n{len(exercises) - bad}/{len(exercises)} exercises OK")
+def cmd_verify() -> int:
+    """Every solution passes and every starter fails, in every language."""
+    bad = total = 0
+    for lang in LANGS:
+        for ex in load_exercises(lang):
+            total += 1
+            ok, report = run_tests(ex, ex["folder"] / f"solution.{lang}.py")
+            print(("PASS " if ok else "FAIL ") + f"{ex['id']} [{lang}]")
+            if not ok:
+                bad += 1
+                print("\n".join(report))
+                continue
+            starter_ok, _ = run_tests(ex, starter_path(ex, lang))
+            if starter_ok and not ex.get("starter_may_pass"):
+                bad += 1
+                print(f"  starter already passes: {ex['id']} [{lang}]")
+    print(f"\n{total - bad}/{total} exercises OK")
     return 1 if bad else 0
 
 
@@ -485,11 +660,13 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if not CONFIG_FILE.exists() and (not args or args[0] in ("status", "next", "check")) and sys.stdin.isatty():
-        print(c("\n  Welcome to Python Quest! First, tell me about you.", GOLD + ";1"))
+        print(c(t("welcome_first", "en") + " / " + t("welcome_first", "es").strip(), GOLD + ";1"))
         cmd_setup()
+    cmd = args[0] if args else "status"
+    if cmd == "verify":
+        return cmd_verify()
     exercises = load_exercises()
     save = load_save()
-    cmd = args[0] if args else "status"
     ex_id = args[1] if len(args) > 1 else None
     if cmd == "status":
         cmd_status(exercises, save)
@@ -508,8 +685,6 @@ def main() -> int:
     elif cmd == "web":
         import web_server
         web_server.serve()
-    elif cmd == "verify":
-        return cmd_verify(exercises)
     else:
         print(__doc__)
     return 0

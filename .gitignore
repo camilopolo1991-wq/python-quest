@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .venv/
 .DS_Store
+
+# your own code (made from the starter in your language)
+lessons/**/exercise.py
+lessons/**/build.py

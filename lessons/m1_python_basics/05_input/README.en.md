@@ -4,7 +4,7 @@
 
 ```python
 name = input("What's your name? ")
-print(f"Hola, {name}!")
+print(f"Hello, {name}!")
 ```
 
 To do math, turn the text into a number:

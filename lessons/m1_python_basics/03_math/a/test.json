@@ -1,20 +1,40 @@
 {
   "id": "m1-03a",
-  "title": "Bus fare",
-  "task": [
-    "A bus ride costs 2950 pesos. You ride 2 times a day, 5 days a week.",
-    "Make variables fare, trips_per_day and days.",
-    "Print the total for the week."
-  ],
   "file": "exercise.py",
-  "hints": [
-    "Multiply the three variables together.",
-    "print(fare * trips_per_day * days)"
-  ],
-  "tests": [
-    {
-      "label": "Prints 29500",
-      "exact": "29500"
-    }
-  ]
+  "en": {
+    "title": "Bus fare",
+    "task": [
+      "A bus ride costs 2950 pesos. You ride 2 times a day, 5 days a week.",
+      "Make variables fare, trips_per_day and days.",
+      "Print the total for the week."
+    ],
+    "hints": [
+      "Multiply the three variables together.",
+      "print(fare * trips_per_day * days)"
+    ],
+    "tests": [
+      {
+        "label": "Prints 29500",
+        "exact": "29500"
+      }
+    ]
+  },
+  "es": {
+    "title": "Pasaje de bus",
+    "task": [
+      "Un pasaje de bus cuesta 2950 pesos. Viajas 2 veces al día, 5 días a la semana.",
+      "Crea las variables pasaje, viajes_por_dia y dias.",
+      "Imprime el total de la semana."
+    ],
+    "hints": [
+      "Multiplica las tres variables.",
+      "print(pasaje * viajes_por_dia * dias)"
+    ],
+    "tests": [
+      {
+        "label": "Imprime 29500",
+        "exact": "29500"
+      }
+    ]
+  }
 }

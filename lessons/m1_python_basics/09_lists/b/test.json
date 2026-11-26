@@ -1,22 +1,44 @@
 {
   "id": "m1-09b",
-  "title": "Grade report",
-  "task": [
-    "scores = [7, 9, 4, 10]",
-    "Print the best, worst and average like:",
-    "Best: 10",
-    "Worst: 4",
-    "Average: 7.5"
-  ],
   "file": "exercise.py",
-  "hints": [
-    "max(), min(), sum() and len() all work on lists.",
-    "Average = sum(scores) / len(scores)"
-  ],
-  "tests": [
-    {
-      "label": "Best, worst, average",
-      "exact": "Best: 10\nWorst: 4\nAverage: 7.5"
-    }
-  ]
+  "en": {
+    "title": "Grade report",
+    "task": [
+      "scores = [7, 9, 4, 10]",
+      "Print the best, worst and average like:",
+      "Best: 10",
+      "Worst: 4",
+      "Average: 7.5"
+    ],
+    "hints": [
+      "max(), min(), sum() and len() all work on lists.",
+      "Average = sum(scores) / len(scores)"
+    ],
+    "tests": [
+      {
+        "label": "Best, worst, average",
+        "exact": "Best: 10\nWorst: 4\nAverage: 7.5"
+      }
+    ]
+  },
+  "es": {
+    "title": "Boletín de notas",
+    "task": [
+      "notas = [7, 9, 4, 10]",
+      "Imprime la mejor, la peor y el promedio así:",
+      "Mejor: 10",
+      "Peor: 4",
+      "Promedio: 7.5"
+    ],
+    "hints": [
+      "max(), min(), sum() y len() funcionan con listas.",
+      "Promedio = sum(notas) / len(notas)"
+    ],
+    "tests": [
+      {
+        "label": "Mejor, peor, promedio",
+        "exact": "Mejor: 10\nPeor: 4\nPromedio: 7.5"
+      }
+    ]
+  }
 }

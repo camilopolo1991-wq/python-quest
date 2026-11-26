@@ -1,55 +1,109 @@
 {
   "id": "m1-10",
-  "title": "Build: Tip Splitter",
-  "task": [
-    "Read lessons/m1_python_basics/10_build_tip_splitter/README.md",
-    "Write your program in build.py"
-  ],
   "file": "build.py",
-  "hints": [
-    "Start by writing the 3 input() lines.",
-    "Tip money = bill * tip / 100",
-    "f\"{each:.2f}\" always shows 2 decimals."
-  ],
-  "tests": [
-    {
-      "label": "300000, 4, 10% → 82500.00 + Expensive night!",
-      "inputs": [
-        "300000",
-        "4",
-        "10"
-      ],
-      "contains": [
-        "Each pays: 82500.00",
-        "Expensive night!"
-      ]
-    },
-    {
-      "label": "100000, 3, 0% → 33333.33",
-      "inputs": [
-        "100000",
-        "3",
-        "0"
-      ],
-      "contains": [
-        "Each pays: 33333.33"
-      ],
-      "not_contains": [
-        "Expensive"
-      ]
-    },
-    {
-      "label": "90000, 2, 15% → 51750.00 + Expensive night!",
-      "inputs": [
-        "90000",
-        "2",
-        "15"
-      ],
-      "contains": [
-        "Each pays: 51750.00",
-        "Expensive night!"
-      ]
-    }
-  ],
-  "build": true
+  "build": true,
+  "en": {
+    "title": "Build: Tip Splitter",
+    "task": [
+      "Read the Build notes on the left.",
+      "Write your program in build.py"
+    ],
+    "hints": [
+      "Start by writing the 3 input() lines.",
+      "Tip money = bill * tip / 100",
+      "f\"{each:.2f}\" always shows 2 decimals."
+    ],
+    "tests": [
+      {
+        "label": "300000, 4, 10% → 82500.00 + Expensive night!",
+        "inputs": [
+          "300000",
+          "4",
+          "10"
+        ],
+        "contains": [
+          "Each pays: 82500.00",
+          "Expensive night!"
+        ]
+      },
+      {
+        "label": "100000, 3, 0% → 33333.33",
+        "inputs": [
+          "100000",
+          "3",
+          "0"
+        ],
+        "contains": [
+          "Each pays: 33333.33"
+        ],
+        "not_contains": [
+          "Expensive"
+        ]
+      },
+      {
+        "label": "90000, 2, 15% → 51750.00 + Expensive night!",
+        "inputs": [
+          "90000",
+          "2",
+          "15"
+        ],
+        "contains": [
+          "Each pays: 51750.00",
+          "Expensive night!"
+        ]
+      }
+    ]
+  },
+  "es": {
+    "title": "Proyecto: Divide la cuenta",
+    "task": [
+      "Lee las notas del proyecto a la izquierda.",
+      "Escribe tu programa en build.py"
+    ],
+    "hints": [
+      "Empieza escribiendo las 3 líneas con input().",
+      "Plata de propina = cuenta * propina / 100",
+      "f\"{cada_uno:.2f}\" siempre muestra 2 decimales."
+    ],
+    "tests": [
+      {
+        "label": "300000, 4, 10% → 82500.00 + ¡Noche cara!",
+        "inputs": [
+          "300000",
+          "4",
+          "10"
+        ],
+        "contains": [
+          "Cada uno paga: 82500.00",
+          "¡Noche cara!"
+        ]
+      },
+      {
+        "label": "100000, 3, 0% → 33333.33",
+        "inputs": [
+          "100000",
+          "3",
+          "0"
+        ],
+        "contains": [
+          "Cada uno paga: 33333.33"
+        ],
+        "not_contains": [
+          "Noche cara"
+        ]
+      },
+      {
+        "label": "90000, 2, 15% → 51750.00 + ¡Noche cara!",
+        "inputs": [
+          "90000",
+          "2",
+          "15"
+        ],
+        "contains": [
+          "Cada uno paga: 51750.00",
+          "¡Noche cara!"
+        ]
+      }
+    ]
+  }
 }

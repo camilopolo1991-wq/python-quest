@@ -1,26 +1,52 @@
 {
   "id": "m1-07b",
-  "title": "Little Gauss",
-  "task": [
-    "Add up every number from 1 to 100 with a loop.",
-    "Print the total."
-  ],
   "file": "exercise.py",
-  "hints": [
-    "range(1, 101) goes from 1 to 100.",
-    "Inside the loop: total = total + n"
-  ],
-  "tests": [
-    {
-      "label": "Prints 5050",
-      "exact": "5050"
-    },
-    {
-      "label": "Uses a for loop",
-      "source_contains": [
-        "for "
-      ],
-      "contains": []
-    }
-  ]
+  "en": {
+    "title": "Little Gauss",
+    "task": [
+      "Add up every number from 1 to 100 with a loop.",
+      "Print the total."
+    ],
+    "hints": [
+      "range(1, 101) goes from 1 to 100.",
+      "Inside the loop: total = total + n"
+    ],
+    "tests": [
+      {
+        "label": "Prints 5050",
+        "exact": "5050"
+      },
+      {
+        "label": "Uses a for loop",
+        "source_contains": [
+          "for "
+        ],
+        "contains": []
+      }
+    ]
+  },
+  "es": {
+    "title": "El pequeño Gauss",
+    "task": [
+      "Suma todos los números del 1 al 100 con un ciclo.",
+      "Imprime el total."
+    ],
+    "hints": [
+      "range(1, 101) va del 1 al 100.",
+      "Dentro del ciclo: total = total + n"
+    ],
+    "tests": [
+      {
+        "label": "Imprime 5050",
+        "exact": "5050"
+      },
+      {
+        "label": "Usa un ciclo for",
+        "source_contains": [
+          "for "
+        ],
+        "contains": []
+      }
+    ]
+  }
 }

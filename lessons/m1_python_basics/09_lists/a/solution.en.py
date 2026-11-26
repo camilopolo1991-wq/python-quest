@@ -1,4 +1,4 @@
-bag = ["mango", "lulo", "banano"]
+bag = ["mango", "lulo", "banana"]
 bag.append("guava")
 for fruit in bag:
     print(fruit)
